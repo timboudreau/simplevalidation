@@ -21,7 +21,7 @@ public abstract class AbstractValidator<T> implements Validator<T> {
      * @return The model type
      */
     @Override
-    public Class<T> modelType() {
+    public final Class<T> modelType() {
         return type;
     }
 }
