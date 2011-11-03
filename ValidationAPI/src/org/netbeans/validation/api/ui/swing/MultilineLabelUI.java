@@ -48,6 +48,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Point;
@@ -149,7 +150,11 @@ final class MultilineLabelUI extends LabelUI {
         Arrays.fill(dummy, 'X');
         Graphics2D g = createOffscreenGraphics(c);
         int testWidth = g.getFontMetrics(c.getFont()).stringWidth(new String(dummy));
-        int maxw = c.getGraphicsConfiguration().getDevice().getDisplayMode().getWidth();
+        GraphicsConfiguration gc = c.getGraphicsConfiguration();
+        if (gc == null) {
+            return super.getMinimumSize(c);
+        }
+        int maxw = gc.getDevice().getDisplayMode().getWidth();
         Insets ins = c.getInsets();
         int parentWidth = c.getWidth();
         if (parentWidth == 0 && c.getParent() != null) {
