@@ -6,15 +6,12 @@
 package org.netbeans.validation.api.ui.swing;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import javax.swing.ComboBoxModel;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.text.Document;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert.*;
 import org.netbeans.validation.api.AbstractValidator;
@@ -27,34 +24,12 @@ import org.netbeans.validation.api.ui.ValidationListenerFactory;
 import org.netbeans.validation.api.ui.ValidationStrategy;
 import org.netbeans.validation.api.ui.ValidationUI;
 
-/**
- *
- * @author Administrator
- */
 public class SwingValidationListenerFactoryTest {
 
-    public SwingValidationListenerFactoryTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-        
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     @Test
-    public void testStandardValidatorListeners() {
+    public void testStandardValidatorListeners() throws Exception {
+        EventQueue.invokeAndWait(new Runnable() {
+            public void run() {
         ValidationListener<JComboBox> boxStringL = ValidationListenerFactory.createValidationListener(new JComboBox(), ValidationStrategy.DEFAULT, ValidationUI.NO_OP, StringValidators.NO_WHITESPACE);
         ValidationListener<JTextField> fieldModelS = ValidationListenerFactory.createValidationListener(new JTextField(), ValidationStrategy.DEFAULT, ValidationUI.NO_OP, StringValidators.NO_WHITESPACE);
         ColorV cv = new ColorV();
@@ -72,6 +47,8 @@ public class SwingValidationListenerFactoryTest {
         assert !cbv.validated;
         boxModelL.performValidation();
         assert cbv.validated;
+            }
+        });
     }
     
     private static class CBV implements Validator<ComboBoxModel> {
