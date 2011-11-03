@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Validation" default="default" basedir=".">
+    <description>Builds, tests, and runs the project Validation.</description>
+    <import file="nbproject/build-impl.xml"/>
+
+    <property name="release-dir" value="${basedir}/release"/>
+    <property name="project.nbstubs" value="../nbstubs/"/>
+    <target name="release" depends="clean-release-files,clean,test,release-nbm,release-javadoc,release-source,release-dist"
+        description="Build release files">
+        <mkdir dir="${release-dir}"/>
+        <copy file="${dist.dir}/org-netbeans-validation-api.nbm" todir="${release-dir}"/>
+        <copy file="${dist.jar}" todir="${release-dir}"/>
+        <copy file="${dist.dir}/validation-src.zip" todir="${release-dir}"/>
+        <copy file="${dist.dir}/validation-javadoc.zip" todir="${release-dir}"/>
+    </target>
+
+    <target name="clean-release-files">
+        <delete dir="${release-dir}"/>
+    </target>
+
+    <target name="release-dist" depends="unjar-libs,jar"/>
+
+    <target name="release-nbm" depends="nbm"/>
+
+    <target name="unjar-libs" depends="init">
+        <ant antfile="${project.nbstubs}/build.xml" target="jar" inheritall="false"
+            inheritrefs="false"/>
+        <unjar src="../nbstubs/dist/nbstubs.jar" dest="${build.classes.dir}"/>
+        <antcall target="compile"/>
+    </target>
+    
+    <target name="release-javadoc" depends="init,javadoc">
+        <delete file="dist/validation-javadoc.zip"/>
+        <zip destfile="dist/validation-javadoc.zip"
+            basedir="dist/javadoc" update="false" compress="9"
+            whenempty="fail"/>
+    </target>
+
+    <target name="release-source">
+        <delete file="dist/validation-src.zip"/>
+        <zip zipfile="dist/validation-src.zip" compress="9" update="false">
+            <zipfileset dir=".." excludes="branches/**,tags/**,release/**,www/**,nbproject/private/**,dist/**,build/**,doc/**,lib/**,.classpath,.project"/>
+        </zip>
+    </target>
+
+    <target name="release-source-maven">
+        <delete file="dist/validation-sources.zip"/>
+        <zip zipfile="dist/validation-sources.zip" compress="9" basedir="src" update="false">
+        </zip>
+    </target>
+
+    <target name="clean-classes" depends="init">
+        <delete dir="${build.classes.dir}/org/openide"/>
+    </target>
+
+    <target name="nbm" description="Generate a NetBeans Module" depends="clean-classes,release-javadoc,release-source">
+        <!-- rejar w/o org.openide.util -->
+<!--        <antcall target="jar"/> -->
+        <zip zipfile="${dist.dir}/src.zip" compress="9">
+            <fileset dir="src">
+                <exclude name="**/CVS"/>
+            </fileset>
+        </zip>
+        <taskdef classpath="lib/beans2nbm.jar" classname="beans2nbm.ant.GenNbmTask"
+      name="nbm"/>
+
+        <nbm destFolder="${dist.dir}"
+        destFileName="org-netbeans-validation-api.nbm"
+        description="A library for easily creating Wizard dialogs in Swing."
+        version="1.3"
+        homepage="http://kenai.com/projects/simplevalidation/"
+        codeName="org.netbeans.validation.api"
+        jarFileName="${dist.dir}/ValidationAPI.jar"
+        author="Tim Boudreau"
+        displayName="Validation Library"
+        license="gpl"
+        minJDK="1.4"
+        sourceJar="${dist.dir}/src.zip"
+        docsJar="${dist.dir}/validation-javadoc.zip"/>
+    </target>
+
+    <target name="javadoc" description="Build the javadoc" depends="build-javadoc,browse-javadoc"/>
+    <target name="build-javadoc">
+        <!-- javadoc doclet does not like our summary page, so
+             override it completely and insert the summary page manually -->
+        <mkdir dir="dist/javadoc"/>
+        <property file="${basedir}/nbproject/project.properties"/>
+        <property file="${basedir}/nbproject/private/private.properties"/>
+        <javadoc overview="${basedir}/doc/overview.html"
+                 destdir="${dist.dir}/javadoc"
+                 source="1.5"
+                 notree="${javadoc.notree}"
+                 use="${javadoc.use}"
+                 nonavbar="${javadoc.nonavbar}"
+                 noindex="${javadoc.noindex}"
+                 splitindex="${javadoc.splitindex}"
+                 author="${javadoc.author}"
+                 version="${javadoc.version}"
+                 windowtitle="${javadoc.windowtitle}"
+                 private="${javadoc.private}"
+                 failonerror="true"
+                 >
+            <classpath>
+                <path path="${javac.classpath}"/>
+            </classpath>
+
+            <packageset dir="src" defaultexcludes="yes">
+                <include name="org/netbeans/validation/api/**"/>
+                <include name="org/netbeans/validation/api/builtin/**"/>
+                <exclude name="org/netbeans/validation/impl"/>
+            </packageset>
+        </javadoc>
+        <copy file="${basedir}/doc/overview.html" tofile="${basedir}/dist/javadoc/overview-summary.html" overwrite="true"/>
+        <copy file="${basedir}/doc/duckLogo.png" tofile="${basedir}/dist/javadoc/duckLogo.png" overwrite="true"/>
+    </target>
+
+    <target name="browse-javadoc" if="${netbeans.home}">
+        <nbbrowse file="${dist.dir}/javadoc/index.html"/>
+    </target>
+
+</project>

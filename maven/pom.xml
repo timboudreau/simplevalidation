@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.kenai</groupId>
+    <artifactId>simple-validation</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>Simple Validation API</name>
+    <description>
+        This is a simple library for quickly adding validation code to Swing user-interfaces.
+        It handles validating user input when the user changes a component's value,
+        showing error messages and decorating components to indicate which component is
+        the source of the problem. It contains a large number of built-in validators
+        to handle most common situations, such as validating numbers,
+        email addresses, urls and so forth.
+    </description>
+    <url>http://kenai.com/projects/simplevalidation/</url>
+    <licenses>
+        <license>
+            <name>CDDL</name>
+            <url>http://www.sun.com/cddl/cddl.html</url>
+        </license>
+        <license>
+            <name>GPL-CP</name>
+            <url>http://www.gnu.org/software/classpath/license.html</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>tim</id>
+            <name>Tim Boudreau</name>
+            <url>http://kenai.com/people/5777-Tim-Boudreau</url>
+        </developer>
+        <developer>
+            <id>hugoheden</id>
+            <url>http://kenai.com/people/25343-hugoheden</url>
+        </developer>
+        <developer>
+            <id>mkleint</id>
+            <name>Milos Kleint</name>
+            <url>http://kenai.com/people/2114-mkleint</url>
+        </developer>
+    </developers>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://kenai.com/jira/browse/SIMPLEVALIDATION</url>
+    </issueManagement>
+    <scm>
+        <connection>scm:svn:https://svn.kenai.com/svn/simplevalidation~src/maven</connection>
+        <developerConnection>scm:svn:https://svn.kenai.com/svn/simplevalidation~src/maven</developerConnection>
+        <url>http://kenai.com/projects/simplevalidation/sources/src/show</url>
+    </scm>
+    <!--distributionManagement>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement-->
+    <profiles>
+        <profile>
+            <!--
+            have the jar file assebled in the profile from dependencies and pose as
+            a single jar. non-stub including one is just attached to the main artifact
+            -->
+            <id>maven-repository-deployment</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.kenai</groupId>
+                    <artifactId>ValidationAPI</artifactId>
+                    <version>SVN_TRUNK</version>
+                    <scope>system</scope>
+                    <systemPath>${basedir}/../ValidationAPI/dist/ValidationAPI.jar</systemPath>
+                </dependency>
+                <dependency>
+                    <groupId>com.kenai</groupId>
+                    <artifactId>nb_stubs</artifactId>
+                    <version>SVN_TRUNK</version>
+                    <scope>system</scope>
+                    <systemPath>${basedir}/../nbstubs/dist/nbstubs.jar</systemPath>
+                </dependency>
+            </dependencies>
+
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>1.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>nbm</id>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                    <shadedClassifierName>netbeans</shadedClassifierName>
+                                    <artifactSet>
+                                        <excludes>
+                                            <exclude>com.kenai:nb_stubs</exclude>
+                                        </excludes>
+                                    </artifactSet>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <manifestEntries>
+                                                <OpenIDE-Module-Public-Packages>org.netbeans.validation.api.*,org.netbeans.validation.api.builtin.indexvalidation.*,org.netbeans.validation.api.builtin.stringvalidation.*,org.netbeans.validation.api.conversion.*,org.netbeans.validation.api.ui.*,org.netbeans.validation.api.ui.swing.*,org.netbeans.validation.spi.accessibility.*</OpenIDE-Module-Public-Packages>
+                                                <OpenIDE-Module-Java-Dependencies>Java > 1.5</OpenIDE-Module-Java-Dependencies>
+                                                <!-- we need to update the version here to be correct according to spec version requireents -->
+                                                <OpenIDE-Module-Specification-Version>1.0</OpenIDE-Module-Specification-Version>
+                                                <OpenIDE-Module-Implementation-Version>${project.version}</OpenIDE-Module-Implementation-Version>
+                                                <OpenIDE-Module>org.netbeans.validation.api/1</OpenIDE-Module>
+                                                <OpenIDE-Module-Module-Dependencies>org.openide.util</OpenIDE-Module-Module-Dependencies>
+                                                <OpenIDE-Module-Requires>org.openide.modules.ModuleFormat1</OpenIDE-Module-Requires>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>standalone</id>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <artifactSet>
+                                        <includes>
+                                            <include>com.kenai</include>
+                                        </includes>
+                                    </artifactSet>
+                                    <!--shadedClassifierName>standalone</shadedClassifierName-->
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+                            </transformers>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>attach-artifact</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <!-- created by the ../validationAPI/build.xml ant release-javadoc target-->
+                                    <file>${basedir}/../ValidationAPI/dist/validation-javadoc.zip</file>
+                                    <type>jar</type>
+                                    <classifier>javadoc</classifier>
+                                </artifact>
+                                <artifact>
+                                    <!-- created by the ../validationAPI/build.xml ant release-source-maven target-->
+                                    <file>${basedir}/../ValidationAPI/dist/validation-sources.zip</file>
+                                    <type>jar</type>
+                                    <classifier>sources</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </plugin>
+                    
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>nbm-maven-plugin</artifactId>
+                        <version>3.2</version>
+                        <executions>
+                            <execution>
+                                <id>nbm</id>
+                                <goals>
+                                    <goal>nbm</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <finalName>${project.artifactId}-${project.version}-netbeans</finalName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
+
+

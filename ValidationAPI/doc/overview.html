@@ -1,0 +1,676 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <title>Validators API</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+.code-example {color: #000000; background-color: #f9f9ff; font-family: Monospaced;}
+.comment {color: #969696}
+.character {color: #ce7b00}
+.keyword-directive {color: #0000e6}
+.ST0 {color: #ce7b00; font-family: Monospaced; font-weight: bold}
+-->
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+    <h2>Simple Swing Validation Library</h2>
+        <img alt="" align="right" src="duckLogo.png" border="0"/>
+        This is a library for validating the contents of Swing components,
+        in order to show error messages to the user when they interact with
+        those components.  It provides a standard way for controlling a user
+        interface where the user may enter invalid (or inadvisable data) and
+        informing the user of what problems there are.  It also provides
+        built-in validators for many common needs.
+        <p>
+        For the most part that means it is a library for validating instances
+        of <code>java.lang.String</code> in various ways, a facility for taking models
+        from various kinds of components and turning them into
+        <code>Strings</code> for evaluation, and a way to group things that
+        need evaluating together so that the most important or most recent
+        warning is the one the user sees.
+        <h3>Rationale</h3>
+        Why create another validation library - aren't there already a few
+        out there? Yes there are, and if you are writing something from scratch, take a
+        look at them (<a href="http://jgoodies.com/freeware/validationdemo/index.html">JGoodies
+        Validation is an interesting one</a>).
+        <p>
+        The point of creating this library was to make it easy to
+        retrofit validation onto existing code easily, and in particular, to
+        supply a lot of validators for common use cases, so that adding
+        validation typically only means adding a few lines of code.
+        Other solutions are great for coding from scratch;  the goal of
+        this library is that it can be applied quickly and solve most
+        problems with very little code &mdash; without having to rewrite
+        your UI.  That's not much use if you have
+        hundreds of existing UIs which could use validation support and don't
+        have it.
+        <h2>A Validator</h2>
+        <p>
+    A <a href="org/netbeans/validation/api/Validator.html"><code>Validator</code></a> is quite simple&mdash;
+    you implement one method, <code>validate()</code>.  Here is a validator
+    that registers a problem if a string is empty:
+
+<div class="code-example">
+<pre>
+<span class="keyword-directive">final</span> <span class="keyword-directive">class</span> EmptyStringIllegalValidator <span class="keyword-directive">implements</span> Validator&lt;String&gt; {
+    &#64;Override
+    <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> validate(Problems problems, String compName, String model) {
+        <span class="keyword-directive">if</span> (model.isEmpty()) {
+            String message = NbBundle.getMessage(EmptyStringIllegalValidator.<span class="keyword-directive">class</span>,
+                <span class="character">&quot;</span><span class="character">MSG_MAY_NOT_BE_EMPTY</span><span class="character">&quot;</span>, compName); <span class="comment">//NOI18N</span>
+            problems.add (message);
+        }
+    }
+}
+</pre>
+</div>
+
+        <blockquote><b><i>Note:</i></b> In these examples, localized strings are
+        fetched using NetBeans APIs for these purposes, since this library
+        is intended for use in NetBeans (and also other places).  Stub versions
+        of these classes, which provide these methods, are included with the
+        project.</blockquote>
+        <p>
+        You'll notice that the validator has a generic type of <code>String</code>.
+        <i>But Swing components don't use Strings, they use <code>Document</code>s and other
+        models!</i>  Not to worry.  You just wrap a <code>Validator&lt;String&gt;</code> in
+        a <code>Validator&lt;Document&gt;</code> which does the conversion.  The library
+        provides built-in converters for <code>javax.swing.text.Document</code>
+        and <code>javax.swing.ComboBoxModel</code>.  You can register a factory
+        of your own and then simply call
+<div class="code-example">
+<pre>
+Validator&lt;MyModel&gt; v = converter.find (String.<span class="keyword-directive">class</span>, MyModel.<span class="keyword-directive">class</span>);
+</pre>
+</div>
+        whenever you need to use a String validator against a component that
+        has a <code>MyModel</code> model.  That way, you write your validation
+        code against the thing that makes the most sense to work with;  and your
+        UI uses the class that makes the most sense for <i>it</i> to use.
+
+        <h2>Built-in Validators</h2>
+        <p>
+            A large complement of standard validators are available via the
+            <a href="org/netbeans/validation/api/builtin/stringvalidation/StringValidators.html"><code>StringValidators</code></a> enum.
+            This is an <code>enum</code> of validator factories each of which
+            can produce validators for <code>java.lang.String</code>s. Producing validators
+            that operate against other kinds of model objects is easy; just
+            register a <code><a href="org/netbeans/validation/api/conversion/Converter.html">Converter</a></code> which
+            can take the object type you want, turn it into a String and pass
+            it to the validator you want &mdash; or write a validator that
+            directly calls some other type (this involves a little more work
+            wiring the validator up to the UI since you will have to write your
+            own listener).
+        <p>
+            Here are some of the built-in validators:
+        <ul>
+            <li><b>Non empty string</b></li>
+            <li><b>Non negative number</b></li>
+            <li><b>Not a Java keyword</b></li>
+            <li><b>Valid number</b></li>
+            <li><b>Valid integer</b></li>
+            <li><b>Valid hex number</b></li>
+            <li><b>Valid URL</b></li>
+            <li><b>Valid Filename</b></li>
+            <li><b>No whitespace in String</b></li>
+            <li><b>File which exists</b></li>
+            <li><b>File which is directory</b></li>
+            <li><b>File which is file</b></li>
+        </ul>
+            and hopefully more will be contributed over time.
+        <h2>Basic Usage</h2>
+            Here is a simple example of validating a URL:
+
+<div class="code-example">
+<pre>
+  <span class="keyword-directive">public</span> <span class="keyword-directive">static</span> <span class="keyword-directive">void</span> main(String[] args) {
+    <span class="comment">//This is our actual UI</span>
+    JPanel inner = <span class="keyword-directive">new</span> JPanel();
+    JLabel lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Enter a URL</span><span class="character">&quot;</span>);
+    JTextField f = <span class="keyword-directive">new</span> JTextField();
+    f.setColumns(40);
+
+    <span class="comment">//Setting the component name is important - it is used in</span>
+    <span class="comment">//error messages</span>
+    f.setName(<span class="character">&quot;</span><span class="character">URL</span><span class="character">&quot;</span>);
+
+    inner.add(lbl);
+    inner.add(f);
+
+    <span class="comment">//Create a ValidationPanel - this is a panel that will show</span>
+    <span class="comment">//any problem with the input at the bottom with an icon</span>
+    ValidationPanel panel = <span class="keyword-directive">new</span> ValidationPanel();
+    panel.setInnerComponent(inner);
+    SwingValidationGroup group = panel.getValidationGroup();
+
+    <span class="comment">//This is all we do to validate the URL:</span>
+    group.add(f, StringValidators.REQUIRE_NON_EMPTY_STRING,
+            StringValidators.NO_WHITESPACE,
+            StringValidators.URL_MUST_BE_VALID);
+
+    <span class="comment">//Convenience method to show a simple dialog</span>
+    <span class="keyword-directive">if</span> (panel.showOkCancelDialog(<span class="character">&quot;</span><span class="character">URL</span><span class="character">&quot;</span>)) {
+      System.out.println(<span class="character">&quot;</span><span class="character">User clicked OK.  URL is </span><span class="character">&quot;</span> + f.getText());
+      System.exit(0);
+    } <span class="keyword-directive">else</span> {
+      System.err.println(<span class="character">&quot;</span><span class="character">User clicked cancel.</span><span class="character">&quot;</span>);
+      System.exit(1);
+    }
+  }</pre>
+</div>
+
+
+        <h3>When Validation is Triggered</h3>
+            The timing of validation is up to you.  A variety of
+            <code><a href="org/netbeans/validation/api/ui/ValidationStrategy.html">ValidationStrategies</a>
+            </code> such as <code>ON_FOCUS_LOSS</code> or <code>ON_CHANGE_OR_ACTION</code> are provided so
+            that you can run validation on focus loss, or when text input occurs.  
+            When input happens (or focus loss etc), the validators attached to the
+            affected component will run, and have a chance to add
+            <code><a href="org/netbeans/validation/api/Problem.html">Problem</a></code>s
+            to a list of problems passed to it. <code>Problem</code>s each have a
+            <code><a href="org/netbeans/validation/api/Severity.html">Severity</a></code>,
+            which can be <code>INFO</code>, <code>WARNING</code> or <code>FATAL</code>.
+
+        <h3>One Component, One Validator</h3>
+
+            <code>Validators</code> can be chained together.
+            Each piece of validation logic is encapsulated in an individual
+            validator, and chains of <code>Validator</code>s together can be
+            used in a group and applied to one or more components.
+        <p>
+            In other words, <i>you almost never apply more than one <code>Validator</code>
+            to a component &mdash; rather, you merge together multiple validators
+            into one.</i>
+        <p>
+
+            The code example above uses one of
+            the <code><a href="org/netbeans/validation/api/ui/swing/SwingValidationGroup.html">SwingValidationGroup</a>.add()</code>
+            methods that under the hood will merge the passed
+            Validators into one and uses the result:
+
+<div class="code-example">
+    <pre>
+    group.add(f, StringValidators.REQUIRE_NON_EMPTY_STRING,
+        Validators.NO_WHITESPACE,
+        Validators.URL_MUST_BE_VALID);
+</pre>
+</div>
+        <p>
+            Sometimes such merging needs done explicitly in client code. This can
+            be as simple as
+<div class="code-example">
+<pre>
+    Validator&lt;String&gt; v =
+        ValidatorUtils.merge( new MyValidator(), new OtherValidator(), anotherValidator );
+</pre>
+</div>
+        <h4>Validator chaining example</h4>
+        <p>
+            As an example (that also illustrates how the built in validators that
+            are provided by the 
+            <a href="org/netbeans/validation/api/builtin/stringvalidation/StringValidators.html"><code>StringValidators</code></a>
+            enum may be used), imagine that we want a validator that
+            determines if the user has entered a valid Java package name. What we
+            could do is to first split the entered string on &quot;.&quot; (the full-stop character)
+            an then check that none of the parts is empty and also not a Java keyword.
+        <p>
+            To make sure that the splitting of the entered String is
+            performed we'll use a a validator provided
+            by <code>StringValidators.splitString()</code>. This
+            Validator does not really validate anything, it just does
+            the splitting.  We can chain any other validator on to
+            that one.  We will then chain two other validators onto
+            it. The first will require strings not to be empty and the
+            second will require that each string be a legal Java
+            identifier (i.e not a Java keyword):
+
+<div class="code-example">
+<pre>
+    v = StringValidators.splitString(<span class="character">&quot;</span><span class="ST0">\\</span><span class="character">.</span><span class="character">&quot;</span>, 
+           Validators.REQUIRE_NON_EMPTY_STRING, Validators.REQUIRE_JAVA_IDENTIFIER);
+</pre>
+</div>
+        <p>
+            Perhaps we can accept that the user has entered some whitespace before
+            and/or after the string to be validated. In that case, we&rsquo;ll create yet
+            another Validator onto which we chain the one we currently have. 
+	    This new one will perform a trim() on the String to be validated before passing
+            it on to the chained one. This can be done as follows:
+<div class="code-example">
+<pre>
+    v = StringValidators.trimString(v);
+</pre>
+</div>
+        <p>
+            All this written more compactly:
+<div class="code-example">
+<pre>
+    Validator&lt;String&gt; v =
+        StringValidators.trimString(
+          Validators.splitString(<span class="character">&quot;</span><span class="ST0">\\</span><span class="character">.</span><span class="character">&quot;</span>,
+             Validators.REQUIRE_NON_EMPTY_STRING, Validators.REQUIRE_JAVA_IDENTIFIER)
+        );
+</pre>
+</div>
+        <p>
+            We now have a validator which:
+        <ul>
+            <li>Trims the string to be validated</li>
+            <li>Splits it at every &quot;.&quot; (full-stop) character</li>
+            <li>Validates each element of the split string, checking it is:
+	       <ul>
+		 <li>non-empty</li>
+                 <li>is not a Java keyword</li>
+	       </ul>
+        </ul>
+
+        <h2>Wiring validators to a user interface</h2>
+            The <code><a href="org/netbeans/validation/api/ui/package-summary.html">org.netbeans.validation.api.ui</a></code> package contains
+            the classes for actually connecting validators to a user interface.
+        <p>
+            The key class here is the
+            <a href="org/netbeans/validation/api/ui/ValidationGroup.html"><code>ValidationGroup</code></a> class.
+            A validation group is a group of components which belong to the same UI
+            and are validated together. It will keep track of which problem that is
+            the most severe and recent problem, the so called "lead problem", of the group.
+            The other key class is to implement
+            the method in <code><a href="org/netbeans/validation/api/ui/ValidationUI.html">ValidationUI</a></code>:
+<div class="code-example">
+<pre>
+    void showProblem (Problem problem);
+</pre>
+</div>
+            Basically this should somehow display the lead problem to the user, perhaps
+            as a message in a status bar, and possibly by disabling the OK button in a
+            Dialog or the Next button in a Wizard, until the problem is fixed.
+            For cases where the code has existing ways of doing these things, it
+            is usually easy to write an adapter that calls those existing ways.
+            If there are no problems, then <code>null</code> will be
+            passed to the <code>ValidationUI</code>&rsquo;s <code>showProblem</code> method to
+            remove any visible indication of prior problems.
+        <p>
+            So to wire up your UI, you need an implementation of <code>ValidationUI</code>.
+            Then you pass it to <code>ValidationGroup.create(ValidationUI)</code>.
+            Then you add <code>Validator</code>s tied to various components to that
+            <code>ValidationGroup</code>.
+        <p>
+            The package also comes with an example panel
+            <code><a href="org/netbeans/validation/api/ui/swing/ValidationPanel.html">ValidationPanel</a></code>
+            which shows errors in a visually pleasing way and fires changes.
+
+
+        <h2>Component Names</h2>
+            The components added to a group generally need to have their name set
+            to a localized, human-readable name &mdash; many of the error messages
+            provided by stock validators
+            need to include the name of the source component to provide a meaningful
+            message.  The name should be a noun that describes the purpose of the
+            component.
+        <p>
+            If the <code>name</code> property is already being used for other
+            purposes, you can also use
+<div class="code-example">
+<pre>
+theComponent.putClientProperty (SwingValidationListener.CLIENT_PROP_NAME, theName);
+</pre>
+</div>
+            If set, it overrides the value returned by <code>getName()</code>.  This
+            is useful because some frameworks (such as <a href="http://wizard.dev.java.net">the
+            Wizard project</a>) make use of component names for their own purposes.
+
+        <h2>Validating custom components</h2>
+            To validate custom components, there is a little more plumbing necessary,
+            but it is still quite simple.  First, create a listener on your component
+            that is a subclass of
+            <code><a href="org/netbeans/validation/api/ui/swing/SwingValidationListener.html">SwingValidationListener</a></code>.
+            Add it as a listener to the component in question.  The superclass already
+            contains the logic to run validation correctly - when an event you are
+            interested in happens, simply call <code>super.triggerValidation()</code>. Add
+            your custom validator to a validation group by calling
+            <code>SwingValidationGroup.add(myValidationListener)</code> (it assumes that
+            your validation listener knows what validators to run).
+        <p>
+            The example below includes an example of validating the color provided
+            by a <code>JColorChooser</code>.  The first step is to write a validator
+            for colors:
+
+<div class="code-example">
+<pre>
+  <span class="keyword-directive">private</span> <span class="keyword-directive">static</span> <span class="keyword-directive">final</span> <span class="keyword-directive">class</span> ColorValidator <span class="keyword-directive">implements</span> Validator&lt;Color&gt; {
+
+    <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> validate(Problems problems, String compName, Color model) {
+      <span class="comment">//Convert the color to Hue/Saturation/Brightn</span><span class="comment">ess</span>
+      <span class="comment">//scaled from 0F to 1.0F</span>
+      <span class="keyword-directive">float</span>[] hsb = Color.RGBtoHSB(model.getRed(), model.getGreen(),
+              model.getBlue(), <span class="keyword-directive">null</span>);
+      <span class="keyword-directive">if</span> (hsb[2] &lt; 0.25) {
+        <span class="comment">//Dark colors cause a fatal error</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is too dark</span><span class="character">&quot;</span>);
+      } <span class="keyword-directive">else</span> <span class="keyword-directive">if</span> (hsb[2] &gt; 0.9) {
+        <span class="comment">//Very bright colors get an information message</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is very bright</span><span class="character">&quot;</span>, Severity.INFO);
+      }
+      <span class="keyword-directive">if</span> (hsb[1] &gt; 0.8) {
+        <span class="comment">//highly saturated colors get a warning</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is very saturated</span><span class="character">&quot;</span>, Severity.WARNING);
+      }
+    }
+  }
+
+</pre>
+</div>
+
+        Then we create a listener class that extends <code><a href="org/netbeans/validation/api/ui/swing/SwingValidationListener.html">SwingValidationListener</a></code>:
+
+<div class="code-example">
+<pre>
+    <span class="keyword-directive">class</span> ColorListener <span class="keyword-directive">extends</span> SwingValidationListener <span class="keyword-directive">implements</span> ChangeListener {
+      ColorListener() {
+        <span class="keyword-directive">super</span>(chooser, ccDecorator);
+      }
+      &#64;Override
+      <span class="keyword-directive">protected</span> Problem performValidation() {
+        Problems ps = <span class="keyword-directive">new</span> Problems();
+        colorValidator.validate(ps, <span class="keyword-directive">null</span>, chooser.getColor());
+        Problem leadProblem = ps.getLeadProblem();
+        <span class="keyword-directive">super</span>.getValidationUI().showProblem(leadProblem);
+        <span class="keyword-directive">return</span> leadProblem;
+      }
+
+      <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> stateChanged(ChangeEvent ce) {
+        <span class="keyword-directive">super</span>.triggerValidation();
+      }
+    }
+</pre>
+</div>
+
+        Next we attach it as a listener to the color chooser's selection model and add it to the panel&rsquo;s
+        <code><a href="org/netbeans/validation/api/ui/swing/SwingValidationGroup.html">SwingValidationGroup</a></code>:
+
+<div class="code-example">
+<pre>
+    ColorListener cl = <span class="keyword-directive">new</span> ColorListener();
+    chooser.getSelectionModel().addChangeListener(cl);
+    <span class="comment">//Add our custom validation code to the validation group</span>
+    pnl.getValidationGroup().add(cl);
+</pre>
+</div>
+            You will notice that our validator above only produces a fatal error for extremely dark
+            colors;  it produces a warning message for highly saturated colors, and an info
+            message for very bright colors.  When you run the demo, notice how these both are
+            presented differently and also that if a warning or info message is present, and
+            you modify one of the text fields to produce a fatal error, the fatal error supersedes
+            the warning or info message as long as it remains uncorrected.
+
+        <h2>Example</h2>
+            Below is a simple example using <code>ValidationPanel</code> to make
+            a dialog containing text fields with various restrictions, which
+            shows feedback.  If you have checked out the source code, you will find
+            a copy of this example in the <code>ValidationDemo/</code> subfolder.
+
+<div class="code-example">
+<pre>
+<span class="keyword-directive">package</span> validationdemo;
+
+<span class="keyword-directive">import</span> java.awt.BorderLayout;
+<span class="keyword-directive">import</span> java.awt.Color;
+<span class="keyword-directive">import</span> java.io.File;
+<span class="keyword-directive">import</span> javax.swing.BoxLayout;
+<span class="keyword-directive">import</span> javax.swing.JColorChooser;
+<span class="keyword-directive">import</span> javax.swing.JFrame;
+<span class="keyword-directive">import</span> javax.swing.JLabel;
+<span class="keyword-directive">import</span> javax.swing.JPanel;
+<span class="keyword-directive">import</span> javax.swing.JTextField;
+<span class="keyword-directive">import</span> javax.swing.UIManager;
+<span class="keyword-directive">import</span> javax.swing.WindowConstants;
+<span class="keyword-directive">import</span> javax.swing.event.ChangeEvent;
+<span class="keyword-directive">import</span> javax.swing.event.ChangeListener;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.Problem;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.Problems;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.Severity;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.Validator;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.ui.swing.ValidationPanel;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.builtin.Validators;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.ui.swing.SwingComponentDecorationFactory;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.ui.swing.SwingValidationListener;
+<span class="keyword-directive">import</span> org.netbeans.validation.api.ui.ValidationUI;
+
+<span class="keyword-directive">public</span> <span class="keyword-directive">class</span> Main {
+
+  <span class="keyword-directive">public</span> <span class="keyword-directive">static</span> <span class="keyword-directive">void</span> main(String[] args) <span class="keyword-directive">throws</span> Exception {
+    <span class="comment">//Set the system look and feel</span>
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+    <span class="keyword-directive">final</span> JFrame jf = <span class="keyword-directive">new</span> JFrame(<span class="character">&quot;</span><span class="character">Validators Demo</span><span class="character">&quot;</span>);
+    jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+    <span class="comment">//Her</span><span class="comment">e we create our Validation Panel.  It has a built-in</span>
+    <span class="comment">//ValidationGroup we can use - we will just call</span>
+    <span class="comment">//pnl.getValidationGroup() and add validators to it tied to</span>
+    <span class="comment">//compo</span><span class="comment">nents</span>
+    <span class="keyword-directive">final</span> ValidationPanel pnl = <span class="keyword-directive">new</span> ValidationPanel();
+    jf.setContentPane(pnl);
+
+    <span class="comment">//A panel to hold most of our components</span><span class="comment"> that we will be</span>
+    <span class="comment">//validating</span>
+    JPanel inner = <span class="keyword-directive">new</span> JPanel();
+    inner.setLayout(<span class="keyword-directive">new</span> BoxLayout(inner, BoxLayout.Y_AXIS));
+    pnl.setInnerComponent(inner);
+    JLabel lbl;
+    JTextField field;
+
+    <span class="comment">//Okay, here&#39;s our first thing to validate</span>
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Not a java keyword:</span><span class="character">&quot;</span>);
+    inner.add(lbl);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">listener</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">Non Identifier</span><span class="character">&quot;</span>);
+    inner.add(field);
+
+    <span class="comment">//So</span><span class="comment">, we&#39;ll get a validator, which does trim strings (that&#39;s the boolean</span>
+    <span class="comment">// argument set to true), which will not accept empty strings or java keywords</span>
+    Validator&lt;String&gt; d = Validators.merge(<span class="keyword-directive">tr</span><span class="keyword-directive">ue</span>,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.REQUIRE_JAVA_IDENTIFIER);
+
+    <span class="comment">//Now we add it to the va</span><span class="comment">lidation group</span>
+    pnl.getValidationGroup().add(field, d);
+
+    <span class="comment">//This one is similar to the example above, but it will split the string</span>
+    <span class="comment">//</span><span class="comment">into component parts divided by &#39;.&#39; characters first</span>
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Legal java package name:</span><span class="character">&quot;</span>);
+    inner.add(lbl);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">com.foo.bar.baz</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">package name</span><span class="character">&quot;</span>);
+    inner.add(field);
+    Validator&lt;String&gt; ddd = Validators.merge(<span class="keyword-directive">true</span>,
+            Validators.REQUIRE_NON_EMPTY_STRING, Validators.JAVA_PACKAGE_NAME,
+            Validators.MAY_NOT_END_WITH_PERIOD);
+    pnl.getValidationGroup().add (field, ddd);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">IP Addres</span><span class="character">s or Host Name</span><span class="character">&quot;</span>);
+    inner.add (lbl);
+    field = <span class="keyword-directive">new</span> JTextField (<span class="character">&quot;</span><span class="character">127.0.0.1</span><span class="character">&quot;</span>);
+    field.setName (<span class="character">&quot;</span><span class="character">Address</span><span class="character">&quot;</span>);
+    inner.add (field);
+    Validator&lt;String&gt; dd = Validators.merge(Validators.HOST_NAME_OR_IP_ADDRESS);
+    pnl.getValidationGroup().add (field, dd);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Must be a non-negative integer</span><span class="character">&quot;</span>);
+    inner.add(lbl);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">42</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">the number</span><span class="character">&quot;</span>);
+    inner.add(field);
+
+    <span class="comment">//Note that we&#39;re very picky here - require non-negative number and</span>
+    <span class="comment">//require valid number don&#39;t care that we want an Integer - we also</span>
+    <span class="comment">//need to use require valid integer</span>
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.REQUIRE_VALID_NUMBER,
+            Validators.REQUIRE_VALID_INTEGER,
+            Validators.REQUIRE_NON_NEGATIVE_NUMBER);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Email address</span><span class="character">&quot;</span>);
+    inner.add(lbl);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">Foo Bar &lt;foo@bar.com&gt;</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">Email address</span><span class="character">&quot;</span>);
+    inner.add(field);
+
+    <span class="comment">//Note that we&#39;re very picky here - require non-negative number and</span>
+    <span class="comment">//require valid number don&#39;t </span><span class="comment">care that we want an Integer - we also</span>
+    <span class="comment">//need to use require valid integer</span>
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.EMAIL_ADDRESS);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Hexadecimal number </span><span class="character">&quot;</span>);
+    inner.add(lbl);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">CAFEBABE</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">hex number</span><span class="character">&quot;</span>);
+    inner.add(field);
+
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.VALID_HEXADECIMAL_NUMBER);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">No spaces: </span><span class="character">&quot;</span>);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">ThisTextHasN</span><span class="character">oSpaces</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">No spaces</span><span class="character">&quot;</span>);
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.NO_WHITESPACE);
+    inner.add(lbl);
+    inner.add(field);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Enter a URL</span><span class="character">&quot;</span>);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">http://netbeans.org/</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">url</span><span class="character">&quot;</span>);
+    pnl.getValidationGroup().add(field, Validators.URL_MUST_BE_VALID);
+    inner.add(lbl);
+    inner.add(field);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">file that exists</span><span class="character">&quot;</span>);
+    <span class="comment">//Find a random file so we can populate the field with a valid initial</span>
+    <span class="comment">//valu</span><span class="comment">e, if possible</span>
+    File userdir = <span class="keyword-directive">new</span> File(System.getProperty(<span class="character">&quot;</span><span class="character">user.dir</span><span class="character">&quot;</span>));
+    File aFile = <span class="keyword-directive">null</span>;
+    <span class="keyword-directive">for</span> (File f : userdir.listFiles()) {
+      <span class="keyword-directive">if</span> (f.isFile()) {
+        aFile = f;
+        <span class="keyword-directive">break</span>;
+      }
+    }
+    field = <span class="keyword-directive">new</span> JTextField(aFile == <span class="keyword-directive">null</span> ? <span class="character">&quot;&quot;</span> : aFile.getAbsolutePath());
+
+    <span class="comment">/</span><span class="comment">/We could call field.setName(&quot;File&quot;).</span>
+    <span class="comment">//Note there is an alternative to field.setName() if we are using that</span>
+    <span class="comment">//for some other purpose:</span>
+    SwingValidationListener.setComponentName(field, <span class="character">&quot;</span><span class="character">File</span><span class="character">&quot;</span>);
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.FILE_MUST_BE_FILE);
+    inner.add(lbl);
+    inner.add(field);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Folder that exists</span><span class="character">&quot;</span>);
+    field = <span class="keyword-directive">new</span> JTextField(System.getProperty(<span class="character">&quot;</span><span class="character">user.dir</span><span class="character">&quot;</span>));
+    field.setName(<span class="character">&quot;</span><span class="character">folder</span><span class="character">&quot;</span>);
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.FILE_MUST_BE_DIRECTORY);
+    inner.add(lbl);
+    inner.add(field);
+
+    lbl = <span class="keyword-directive">new</span> JLabel(<span class="character">&quot;</span><span class="character">Valid file name</span><span class="character">&quot;</span>);
+    field = <span class="keyword-directive">new</span> JTextField(<span class="character">&quot;</span><span class="character">Validators.java</span><span class="character">&quot;</span>);
+    field.setName(<span class="character">&quot;</span><span class="character">File Name</span><span class="character">&quot;</span>);
+
+    <span class="comment">//Here we&#39;re requiring a valid file name</span>
+    <span class="comment">//(no file or path separator chars)</span>
+    pnl.getValidationGroup().add(field,
+            Validators.REQUIRE_NON_EMPTY_STRING,
+            Validators.REQUIRE_VALID_FILENAME);
+    inner.add(lbl);
+    inner.add(field);
+
+    <span class="comment">//Here we will do custom validation of a JColorChooser</span>
+
+    <span class="keyword-directive">final</span> JColorChooser chooser = <span class="keyword-directive">new</span> JColorChooser();
+    <span class="comment">//Use an</span><span class="comment"> intermediary panel to keep the layout from jumping when</span>
+    <span class="comment">//the problem is shown/hidden</span>
+    <span class="keyword-directive">final</span> JPanel ccPanel = <span class="keyword-directive">new</span> JPanel();
+    ccPanel.add (chooser);
+    <span class="comment">//Add it to the main p</span><span class="comment">anel because GridLayout will make it too small</span>
+    <span class="comment">//ValidationPanel panel uses BorderLayout (and will throw an exception</span>
+    <span class="comment">//if you try to change it)</span>
+    pnl.add(ccPanel, BorderLayout.EAST);
+
+    <span class="comment">//Set a default value that won&#39;t show an error</span>
+    chooser.setColor(<span class="keyword-directive">new</span> Color(191, 86, 86));
+
+    <span class="comment">//ColorValidator is defin</span><span class="comment">ed below</span>
+    <span class="keyword-directive">final</span> ColorValidator colorValidator = <span class="keyword-directive">new</span> ColorValidator();
+    <span class="keyword-directive">final</span> ValidationUI ccDecorator =
+            SwingComponentDecorationFactory.get().decorationFor(chooser);
+
+    <span class="comment">//Note if we could also implement Validator directly on this class;</span>
+    <span class="comment">//however it&#39;s more reusable if we don&#39;t</span>
+    <span class="keyword-directive">class</span> ColorListener <span class="keyword-directive">extends</span> SwingValidationListener <span class="keyword-directive">implements</span> ChangeListener {
+      ColorListener() {
+        <span class="keyword-directive">super</span>(chooser, ccDecorator);
+      }
+      &#64;Override
+      <span class="keyword-directive">protected</span> Problem performValidation() {
+        Problems ps = <span class="keyword-directive">new</span> Problems();
+        colorValidator.validate(ps, <span class="keyword-directive">null</span>, chooser.getColor());
+        Problem p = ps.getLeadProblem();
+        <span class="keyword-directive">super</span>.getValidationUI().showProblem( p );
+        <span class="keyword-directive">return</span> p;
+      }
+
+      <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> stateChanged(ChangeEvent ce) {
+        <span class="keyword-directive">super</span>.triggerValidation();
+      }
+    }
+    ColorListener cl = <span class="keyword-directive">new</span> ColorListener();
+    chooser.getSelectionModel().addChangeListener(cl);
+    <span class="comment">//Add our c</span><span class="comment">ustom validation code to the validation group</span>
+    pnl.getValidationGroup().add(cl);
+    <span class="keyword-directive">boolean</span> okClicked = pnl.showOkCancelDialog(<span class="character">&quot;</span><span class="character">Validation Demo</span><span class="character">&quot;</span>);
+    System.out.println(okClicked ? <span class="character">&quot;</span><span class="character">User clicked OK</span><span class="character">&quot;</span> : <span class="character">&quot;</span><span class="character">User did not click OK</span><span class="character">&quot;</span>);
+    System.exit(0);
+  }
+
+  <span class="keyword-directive">private</span> <span class="keyword-directive">static</span> <span class="keyword-directive">final</span> <span class="keyword-directive">class</span> ColorValidator <span class="keyword-directive">implements</span> Validator&lt;Color&gt; {
+
+    <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> validate(Problems problems, String compName, Color model) {
+      <span class="comment">//Convert the color to Hue/Saturation/Brightness</span>
+      <span class="comment">//scaled from 0F to 1.0F</span>
+      <span class="keyword-directive">float</span>[] hsb = Color.RGBtoHSB(model.getRed(), model.getGreen(),
+              model.getBlue(), <span class="keyword-directive">null</span>);
+      <span class="keyword-directive">if</span> (hsb[2] &lt; 0.25) {
+        <span class="comment">//Dark colors cause a fatal error</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is too dark</span><span class="character">&quot;</span>);
+      } <span class="keyword-directive">else</span> <span class="keyword-directive">if</span> (hsb[2] &gt; 0.9) {
+        <span class="comment">//Very bright colors get an information message</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is very bri</span><span class="character">ght</span><span class="character">&quot;</span>, Severity.INFO);
+      }
+      <span class="keyword-directive">if</span> (hsb[1] &gt; 0.8) {
+        <span class="comment">//highly saturated colors get a warning</span>
+        problems.add(<span class="character">&quot;</span><span class="character">Color is very saturated</span><span class="character">&quot;</span>, Severity.WARNING);
+      }
+    }
+  }
+}
+</pre>
+</div>
+
+</body>
+</html>
