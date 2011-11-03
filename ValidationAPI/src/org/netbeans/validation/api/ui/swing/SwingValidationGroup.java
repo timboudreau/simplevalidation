@@ -180,10 +180,9 @@ public final class SwingValidationGroup extends ValidationGroup {
      * @param box A combo box component
      * @param validators One or more Validators
      */
-    @SuppressWarnings("unchecked")
     public final void add(JComboBox box, Validator<String>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        this.add (ValidationListenerFactory.createValidationListener(box, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.<String>merge(validators)));
+        this.addItem(ValidationListenerFactory.createValidationListener(box, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.<String>merge(validators)), false);
     }
 
     /**
@@ -200,10 +199,9 @@ public final class SwingValidationGroup extends ValidationGroup {
      * @param list A JList component
      * @param validators One or more Validators
      */
-    @SuppressWarnings("unchecked")
     public final void add(JList list, Validator<Integer[]>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        this.add (ValidationListenerFactory.createValidationListener(list, ValidationStrategy.DEFAULT, this.getComponentDecorationFactory().decorationFor(list), ValidatorUtils.merge(validators)));
+        this.addItem(ValidationListenerFactory.createValidationListener(list, ValidationStrategy.DEFAULT, this.getComponentDecorationFactory().decorationFor(list), ValidatorUtils.merge(validators)), false);
     }
 
 
@@ -217,10 +215,9 @@ public final class SwingValidationGroup extends ValidationGroup {
      * @param buttons The buttons
      * @param validators A number of Validators
      */
-    @SuppressWarnings("unchecked")
     public final void add(final AbstractButton[] buttons, Validator<Integer[]>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        this.add (ValidationListenerFactory.createValidationListener(buttons, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.merge(validators)));
+        this.addItem(ValidationListenerFactory.createValidationListener(buttons, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.merge(validators)), false);
     }
 
 
