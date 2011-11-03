@@ -73,8 +73,9 @@ public class Main {
     field.setName("package name");
     inner.add(field);
     d = StringValidators.trimString(ValidatorUtils.merge(
-            StringValidators.REQUIRE_NON_EMPTY_STRING, StringValidators.JAVA_PACKAGE_NAME,
-            StringValidators.MAY_NOT_END_WITH_PERIOD));
+            StringValidators.REQUIRE_NON_EMPTY_STRING,
+            ValidatorUtils.merge(StringValidators.JAVA_PACKAGE_NAME,
+            StringValidators.MAY_NOT_END_WITH_PERIOD)));
     pnl.getValidationGroup().add(field, d);
 
     lbl = new JLabel("IP Address or Host Name");
@@ -95,11 +96,11 @@ public class Main {
     //Note that we're very picky here - require non-negative number and
     //require valid number don't care that we want an Integer - we also
     //need to use require valid integer
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.REQUIRE_VALID_NUMBER,
-            StringValidators.REQUIRE_VALID_INTEGER,
-            StringValidators.REQUIRE_NON_NEGATIVE_NUMBER);
+            ValidatorUtils.merge(StringValidators.REQUIRE_VALID_NUMBER,
+            ValidatorUtils.merge(StringValidators.REQUIRE_VALID_INTEGER,
+            StringValidators.REQUIRE_NON_NEGATIVE_NUMBER))));
 
     lbl = new JLabel("Email address");
     inner.add(lbl);
@@ -110,9 +111,9 @@ public class Main {
     //Note that we're very picky here - require non-negative number and
     //require valid number don't care that we want an Integer - we also
     //need to use require valid integer
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.EMAIL_ADDRESS);
+            StringValidators.EMAIL_ADDRESS));
 
     lbl = new JLabel("Hexadecimal number ");
     inner.add(lbl);
@@ -120,16 +121,16 @@ public class Main {
     field.setName("hex number");
     inner.add(field);
 
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.VALID_HEXADECIMAL_NUMBER);
+            StringValidators.VALID_HEXADECIMAL_NUMBER));
 
     lbl = new JLabel("No spaces: ");
     field = new JTextField("ThisTextHasNoSpaces");
     field.setName("No spaces");
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.NO_WHITESPACE);
+            StringValidators.NO_WHITESPACE));
     inner.add(lbl);
     inner.add(field);
 
@@ -157,18 +158,18 @@ public class Main {
     //Note there is an alternative to field.setName() if we are using that
     //for some other purpose:
     SwingValidationGroup.setComponentName(field, "File");
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.FILE_MUST_BE_FILE);
+            StringValidators.FILE_MUST_BE_FILE));
     inner.add(lbl);
     inner.add(field);
 
     lbl = new JLabel("Folder that exists");
     field = new JTextField(System.getProperty("user.dir"));
     field.setName("folder");
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.FILE_MUST_BE_DIRECTORY);
+            StringValidators.FILE_MUST_BE_DIRECTORY));
     inner.add(lbl);
     inner.add(field);
 
@@ -178,9 +179,9 @@ public class Main {
 
     //Here we're requiring a valid file name
     //(no file or path separator chars)
-    pnl.getValidationGroup().add(field,
+    pnl.getValidationGroup().add(field, ValidatorUtils.merge(
             StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.REQUIRE_VALID_FILENAME);
+            StringValidators.REQUIRE_VALID_FILENAME));
     inner.add(lbl);
     inner.add(field);
 
@@ -200,7 +201,6 @@ public class Main {
     chooser.setColor(new Color(191, 86, 86));
 
     //ColorValidator is defined below
-    final ColorValidator colorValidator = new ColorValidator();
     final ValidationUI ccDecorator =
             SwingComponentDecorationFactory.getDefault().decorationFor(chooser);
     final ColorValidator val = new ColorValidator();
@@ -217,14 +217,6 @@ public class Main {
         super.performValidation();
       }
 
-      public void validate(Problems problems, String compName, Color model) {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      public Class<Color> modelType() {
-        return Color.class;
-      }
-
       @Override
       protected Color getModelObject(JColorChooser comp) {
         return comp.getColor();
@@ -233,6 +225,7 @@ public class Main {
     ColorListener cl = new ColorListener();
     chooser.getSelectionModel().addChangeListener(cl);
     //Add our custom validation code to the validation group
+    // XXX even when problems.add is called below, nothing appears - why?
     pnl.getValidationGroup().addItem(cl, false);
     boolean okClicked = pnl.showOkCancelDialog("Validation Demo");
     System.out.println(okClicked ? "User clicked OK" : "User did not click OK");
@@ -263,4 +256,6 @@ public class Main {
       }
     }
   }
+
+  private Main() {}
 }

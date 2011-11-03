@@ -89,22 +89,6 @@ final class SwingValidationListenerFactories {
 
     /**
      * Create a ValidationListener for a JList. The JList will be validated
-     * (with ValidationStrategy.DEFAULT)
-     * using the passed Validator<ListSelectionModel>
-     * showing any problems in the passed ValidationUI
-     * <p>
-     * Note that there is also a convenience method for creating a  ValidationListener
-     * and directly adding it to a ValidationGroup, see
-     * {@link SwingValidationGroup#add(javax.swing.JList, org.netbeans.validation.api.Validator[]) }
-     *
-     */
-    static ValidationListener createJListValidationListener(final JList component, ValidationUI validationUI, final Validator<ListSelectionModel> validator) {
-        assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        return new JListValidationListenerImpl(component, ValidationStrategy.DEFAULT, validationUI, validator);
-    }
-
-    /**
-     * Create a ValidationListener for a JList. The JList will be validated
      * with the passed ValidationStrategy
      * using the passed chain of Validator<Integer[]>
      * showing any problems in the passed ValidationUI
@@ -114,29 +98,10 @@ final class SwingValidationListenerFactories {
      * {@link SwingValidationGroup#add(javax.swing.JList, org.netbeans.validation.api.Validator[]) }
      *
      */
-    static ValidationListener createJListValidationListener(final JList component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<Integer[]>... validators) {
+    static ValidationListener<JList> createJListValidationListenerConverted(final JList component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<Integer[]> orig) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        final Validator<Integer[]> merged = ValidatorUtils.merge(validators);
-        final Validator<ListSelectionModel> validator = Converter.find(Integer[].class, ListSelectionModel.class).convert(merged);
+        final Validator<ListSelectionModel> validator = Converter.find(Integer[].class, ListSelectionModel.class).convert(orig);
         return new JListValidationListenerImpl(component, strategy, validationUI, validator);
-    }
-
-    /**
-     * Create a ValidationListener for a JList. The JList will be validated
-     * (with ValidationStrategy.DEFAULT)
-     * using the passed chain of Validator<Integer[]>
-     * showing any problems in the passed ValidationUI
-     * <p>
-     * Note that there is also a convenience method for creating a  ValidationListener
-     * and directly adding it to a ValidationGroup, see
-     * {@link SwingValidationGroup#add(javax.swing.JList, org.netbeans.validation.api.Validator[]) }
-     *
-     * @param component A JList
-     * @param validators A number of validators
-     */
-    static ValidationListener createJListValidationListener(final JList component, ValidationUI validationUI, final Validator<Integer[]>... validators) {
-        assert EventQueue.isDispatchThread() : "Must be called on event thread";
-        return createJListValidationListener(component, ValidationStrategy.DEFAULT, validationUI, validators);
     }
 
     /**

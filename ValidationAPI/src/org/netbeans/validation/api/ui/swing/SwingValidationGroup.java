@@ -167,6 +167,36 @@ public final class SwingValidationGroup extends ValidationGroup {
 
 
     /**
+     * Add a text component to be validated using the passed validator.
+     *
+     * <p> When a problem occurs, the created ValidationListener will
+     * use a {@link ValidationUI} created by this {@code ValidationGroup} to decorate
+     * the component.
+     *
+     * <p> <b>Note:</b> All methods in this class must be called from
+     * the AWT Event Dispatch thread, or assertion errors will be
+     * thrown.  Manipulating components on other threads is not safe.
+     *
+     * <p> Swing {@code Document}s (the model used by JTextComponent)
+     * are thread-safe, and can be modified from other threads.  In
+     * the case that a text component validator receives an event on
+     * another thread, validation will be scheduled for later,
+     * <i>on</i> the event thread.
+     * <p>Unlike {@link #add(JTextComponent,Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to add more than one validator, simply add the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param comp A text component such as a <code>JTextField</code>
+     * @param validator a validator
+     */
+    public final void add(JTextComponent comp, Validator<String> validator) {
+        assert EventQueue.isDispatchThread() : "Must be called on event thread";
+        ValidationListener<JTextComponent> vl = ValidationListenerFactory.createValidationListener(comp,
+                ValidationStrategy.DEFAULT,
+                this.getComponentDecorationFactory().decorationFor(comp),
+                validator);
+        this.addItem (vl, false);
+    }
+
+    /**
      * Add a combo box to be validated using the passed validators
      *
      * <p> When a problem occurs, the created {@link ValidationListener} will
@@ -183,6 +213,26 @@ public final class SwingValidationGroup extends ValidationGroup {
     public final void add(JComboBox box, Validator<String>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
         this.addItem(ValidationListenerFactory.createValidationListener(box, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.<String>merge(validators)), false);
+    }
+
+    /**
+     * Add a combo box to be validated using the passed validator.
+     *
+     * <p> When a problem occurs, the created {@link ValidationListener} will
+     * use a {@link ValidationUI} created by this {@code ValidationGroup} to decorate
+     * the component.
+     *
+     * <p> <b>Note:</b> All methods in this class must be called from
+     * the AWT Event Dispatch thread, or assertion errors will be
+     * thrown.  Manipulating components on other threads is not safe.
+     * <p>Unlike {@link #add(JComboBox,Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to add more than one validator, simply add the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param box A combo box component
+     * @param validator a validator
+     */
+    public final void add(JComboBox box, Validator<String> validator) {
+        assert EventQueue.isDispatchThread() : "Must be called on event thread";
+        this.addItem(ValidationListenerFactory.createValidationListener(box, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, validator), false);
     }
 
     /**
@@ -204,6 +254,26 @@ public final class SwingValidationGroup extends ValidationGroup {
         this.addItem(ValidationListenerFactory.createValidationListener(list, ValidationStrategy.DEFAULT, this.getComponentDecorationFactory().decorationFor(list), ValidatorUtils.merge(validators)), false);
     }
 
+    /**
+     * Add a JList to be validated using the passed validator.
+     *
+     * <p> When a problem occurs, the created {@link ValidationListener} will
+     * use a {@link ValidationUI} created by this {@code ValidationGroup} to decorate
+     * the component.
+     *
+     * <p> <b>Note:</b> All methods in this class must be called from
+     * the AWT Event Dispatch thread, or assertion errors will be
+     * thrown.  Manipulating components on other threads is not safe.
+     * <p>Unlike {@link #add(JList,Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to add more than one validator, simply add the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param list A JList component
+     * @param validator a validator
+     */
+    public final void add(JList list, Validator<Integer[]> validator) {
+        assert EventQueue.isDispatchThread() : "Must be called on event thread";
+        this.addItem(ValidationListenerFactory.createValidationListener(list, ValidationStrategy.DEFAULT, this.getComponentDecorationFactory().decorationFor(list), validator), false);
+    }
+
 
     /**
      * Add a validator of button models - typically to see if any are selected.
@@ -218,6 +288,22 @@ public final class SwingValidationGroup extends ValidationGroup {
     public final void add(final AbstractButton[] buttons, Validator<Integer[]>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
         this.addItem(ValidationListenerFactory.createValidationListener(buttons, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, ValidatorUtils.merge(validators)), false);
+    }
+
+    /**
+     * Add a validator of button models - typically to see if any are selected.
+     *
+     * <p> <b>Note:</b> All methods in this class must be called from
+     * the AWT Event Dispatch thread, or assertion errors will be
+     * thrown.  Manipulating components on other threads is not safe.
+     * <p>Unlike {@link #add(AbstractButton[],Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to add more than one validator, simply add the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param buttons The buttons
+     * @param validator a validator
+     */
+    public final void add(final AbstractButton[] buttons, Validator<Integer[]> validator) {
+        assert EventQueue.isDispatchThread() : "Must be called on event thread";
+        this.addItem(ValidationListenerFactory.createValidationListener(buttons, ValidationStrategy.DEFAULT, ValidationUI.NO_OP, validator), false);
     }
 
 

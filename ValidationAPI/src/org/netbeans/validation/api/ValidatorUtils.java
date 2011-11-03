@@ -40,6 +40,9 @@
  */
 package org.netbeans.validation.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.netbeans.validation.api.conversion.Converter;
 
 /**
@@ -72,7 +75,28 @@ public class ValidatorUtils {
             throw new IllegalArgumentException ("Merging empty array of " +
                     "validators");
         }
-        return new AndValidator<T>(validators[0].modelType(), validators);
+        return new AndValidator<T>(validators[0].modelType(), Arrays.asList(validators));
+    }
+
+    /**
+     * Merge together two validators (both of which work against the same type), using logical {@code AND}.
+     * The resulting validator reports success if <b>both</b> the merged validators
+     * report success. (If <b>one</b> or both of the merged validators report failure, the resulting
+     * merged validator reports failure.)
+     * <p>Unlike {@link #merge(Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to merge more than two validators, simply merge the result of merging two with the next one.
+     * @param <T> The type of model (Document, String, etc.) you want to
+     * work with
+     * @param validator1 one validator
+     * @param validator2 another validator of the same type
+     * @return a single validator which delegates to both of the passed ones
+     */
+    public static <T> Validator<T> merge(Validator<T> validator1, Validator<T> validator2) {
+        // XXX could check if one or both are instanceof AndValidator and unpack them, but probably overkill
+        List<Validator<T>> validators = new ArrayList<Validator<T>>(2);
+        validators.add(validator1);
+        validators.add(validator2);
+        return new AndValidator<T>(validator1.modelType(), validators);
     }
 
     /**
@@ -93,7 +117,29 @@ public class ValidatorUtils {
         assert maximum != null : "Maximum null";
         assert validators != null : "Validators null";
         assert validators.length > 0 : "Empty validators array";
-        return new CustomLevelValidator<T>(maximum, validators);
+        return new CustomLevelValidator<T>(maximum, merge(validators));
+    }
+
+    /**
+     * Wraps a validator in a validator which imposes a limit on the severity of the validator in use.
+     * This means that while the
+     * validator you pass in here will work normally, all Problems encountered
+     * which are of greater severity than the maximum passed here will be reset
+     * to the level you pass here.
+     * <p/>
+     * This makes it possible to use validators from the StringValidators enum, which
+     * mostly produce FATAL errors, for cases where only a warning or info message
+     * is actually to be displayed.
+     * <p>Unlike {@link #limitSeverity(Severity,Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to limit more than one validator, simply limit the result of {@link #merge(Validator,Validator)}.
+     * @param <T> The type
+     * @param maximum
+     * @param validator
+     */
+    public static <T> Validator<T> limitSeverity(Severity maximum, Validator<T> validator) {
+        assert maximum != null : "Maximum null";
+        assert validator != null : "Validator null";
+        return new CustomLevelValidator<T>(maximum, validator);
     }
 
     /**

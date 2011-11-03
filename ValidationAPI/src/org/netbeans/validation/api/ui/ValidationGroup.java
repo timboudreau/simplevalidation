@@ -221,6 +221,17 @@ public class ValidationGroup extends ValidationItem {
         this.addItem (ValidationListenerFactory.createValidationListener(comp, ValidationStrategy.DEFAULT, decorationFor(comp), ValidatorUtils.merge(validators)), false);
     }
 
+    /**
+     *
+     * @param <ComponentType>
+     * @param <ValueType>
+     * @param comp
+     * @param validator
+     */
+    public final <ComponentType, ValueType> void add (ComponentType comp, Validator<ValueType> validator) {
+        this.addItem (ValidationListenerFactory.createValidationListener(comp, ValidationStrategy.DEFAULT, decorationFor(comp), validator), false);
+    }
+
     protected <T> ValidationUI decorationFor(T component) {
         return ValidationUI.NO_OP;
     }

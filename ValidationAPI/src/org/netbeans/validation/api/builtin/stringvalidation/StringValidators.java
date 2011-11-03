@@ -181,7 +181,6 @@ public enum StringValidators implements Validator<String> {
      * to the actual validator
      * @return A validator for strings
      */
-    @SuppressWarnings("unchecked")
     private Validator<String> instantiate(boolean trim) {
         Validator<String> result;
         switch (this) {
@@ -240,8 +239,7 @@ public enum StringValidators implements Validator<String> {
                 result = new EmailAddressValidator();
                 return result;
             case JAVA_PACKAGE_NAME :
-                result = StringValidators.splitString("\\.", ValidatorUtils.merge( //NOI18N
-                        StringValidators.REQUIRE_JAVA_IDENTIFIER));
+                result = StringValidators.splitString("\\.", StringValidators.REQUIRE_JAVA_IDENTIFIER); // NOI18N
                 return result;
             case MAY_NOT_END_WITH_PERIOD :
                 result = new MayNotEndWithValidator('.');
@@ -284,11 +282,22 @@ public enum StringValidators implements Validator<String> {
      * which merges validators (any {@code Validator}, not just {@code
      * Validator<String>}) <b>without</b> wrapping the result in one
      * that does String trimming.
-     * 
+     *
      * @param validators a chain of String validators
      */
     public static Validator<String> trimString(Validator<String>... validators) {
         return new TrimStringValidator( ValidatorUtils.merge(validators) );
+    }
+
+    /**
+     * Creates a {@code Validator<String>} that will first call {@code trim()} on the {@code String} to be validated,
+     * and then passes the resulting (trimmed) {@code String} to the passed {@code Validator<String>}.
+     * <p>Unlike {@link #trimString(Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to trim more than one validator, simply trim the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param validator a String validator
+     */
+    public static Validator<String> trimString(Validator<String> validator) {
+        return new TrimStringValidator(validator);
     }
 
     /**
@@ -304,6 +313,22 @@ public enum StringValidators implements Validator<String> {
      */
     public static Validator<String> splitString(String regexp, Validator<String>... validators) {
         return new SplitStringValidator(regexp, ValidatorUtils.merge(validators) );
+    }
+
+    /**
+     * Returns a validator which first splits the string to be evaluated according
+     * to the passed regexp, then passes each component of the split string to
+     * the passed validator.
+     * <p>Unlike {@link #splitString(String,Validator...)}, calling this method does not trigger warnings under {@code -Xlint:unchecked}.
+     * If you wish to split more than one validator, simply split the result of {@link ValidatorUtils#merge(Validator,Validator)}.
+     * @param regexp The regular expression pattern to use to split the string
+     * @param validator the validator that the returned one
+     * should delegate to validate each component of the split string
+     * @return A validator which evaluates each of component of the split string
+     * using the passed Validator
+     */
+    public static Validator<String> splitString(String regexp, Validator<String> validator) {
+        return new SplitStringValidator(regexp, validator);
     }
 
     ////////////////////////////////////////////////////////////////////////////

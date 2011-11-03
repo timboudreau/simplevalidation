@@ -90,12 +90,11 @@ public class DemoPanel extends JPanel {
         // have typed an integer. (This also demonstrates how atomic validators
         // can be chained together).
         Validator<String> posIntValidator =
-                ValidatorUtils.merge(
-                StringValidators.REQUIRE_NON_EMPTY_STRING,
-                StringValidators.NO_WHITESPACE,
-                StringValidators.REQUIRE_VALID_NUMBER,
-                StringValidators.REQUIRE_VALID_INTEGER,
-                StringValidators.REQUIRE_NON_NEGATIVE_NUMBER);
+                ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,
+                ValidatorUtils.merge(StringValidators.NO_WHITESPACE,
+                ValidatorUtils.merge(StringValidators.REQUIRE_VALID_NUMBER,
+                ValidatorUtils.merge(StringValidators.REQUIRE_VALID_INTEGER,
+                StringValidators.REQUIRE_NON_NEGATIVE_NUMBER))));
 
         // Sub-validation-group for the three integer fields:
         final SwingValidationGroup integerFieldSubGroup = SwingValidationGroup.create(new IntegerGroupSum60Validator());
@@ -114,7 +113,7 @@ public class DemoPanel extends JPanel {
         panelValidationGroup.addItem(integerFieldSubGroup, false);
 
         // And finally add the URL-field to the main group.
-        panelValidationGroup.add(urlField, StringValidators.REQUIRE_NON_EMPTY_STRING, StringValidators.URL_MUST_BE_VALID);
+        panelValidationGroup.add(urlField, ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING, StringValidators.URL_MUST_BE_VALID));
 
     }
 

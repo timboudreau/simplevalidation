@@ -40,8 +40,6 @@
  */
 package org.netbeans.validation.api;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -49,10 +47,10 @@ import java.util.List;
  * @author Tim Boudreau
  */
 final class AndValidator<T> extends AbstractValidator<T> {
-    private final List<Validator<T>> validators = new LinkedList<Validator<T>>();
-    public AndValidator(Class<T> type, Validator<T>... initial) {
+    private final List<Validator<T>> validators;
+    AndValidator(Class<T> type, List<Validator<T>> initial) {
         super (type);
-        validators.addAll(Arrays.asList(initial));
+        validators = initial;
         assert validatorTypesMatch (initial) : "Validator type mismatch: " //NOI18N
                 + validators;
     }
@@ -64,21 +62,12 @@ final class AndValidator<T> extends AbstractValidator<T> {
         }
     }
 
-    public void and(Validator<T> v) {
-        andImpl (v);
-    }
-
-    Validator<T> andImpl(Validator<T> v) {
-        validators.add (0, v);
-        return this;
-    }
-
     @Override
     public String toString() {
         return "AndValidator for " + validators;
     }
 
-    private boolean validatorTypesMatch (Validator<?>[] validators) {
+    private boolean validatorTypesMatch(List<? extends Validator<?>> validators) {
         Class<?> type = null;
         for (Validator<?> v : validators) {
             if (type == null) {

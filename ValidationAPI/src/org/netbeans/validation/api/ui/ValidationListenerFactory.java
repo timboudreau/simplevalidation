@@ -17,7 +17,6 @@ import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
-import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
 import org.netbeans.validation.api.ValidatorUtils;
 import org.openide.util.Lookup;
@@ -117,7 +116,6 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
      * @param validator A validator that accepts ModelType arguments
      * @return a listener
      */
-    @SuppressWarnings("unchecked")
     public static <CType, MType> ValidationListener<CType> createValidationListener(final CType component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<MType> validator) {
         Class<MType> modelType = validator.modelType();
         ValidationListener<CType> result = null;
@@ -127,6 +125,7 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
             result = findBuiltInValidationListener(component, strategy, validationUI, validator);
         }
         if (result == null) {
+            @SuppressWarnings("rawtypes")
             Collection <? extends ValidationListenerFactory> registered = Lookup.getDefault().lookupAll(ValidationListenerFactory.class);
             if (Object.class.equals(modelType)) {
                 Logger.getLogger(ValidationListenerFactory.class.getName()).log(
@@ -134,7 +133,8 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
                         "Bad form to create a Validator<Object>: {0}",
                         validator.getClass().getName());
             }
-            Class<CType> compType = (Class<CType>) component.getClass(); //XXX
+            @SuppressWarnings("unchecked") // XXX this code is probably wrong, but have not yet figured out why; probably should accept Class<CType> param
+            Class<CType> compType = (Class<CType>) component.getClass();
             for (ValidationListenerFactory<?,?> f : registered) {
                 if (f.componentType().isAssignableFrom(compType)) {
                     ValidationListenerFactory<CType, MType> cast = f.<CType,MType>as(compType, modelType, component);
@@ -152,11 +152,11 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
         return result;
     }
 
-    @SuppressWarnings("unchecked")
+    // XXX unchecked warnings: need cast method for ValidationListener
     static <CType, MType> ValidationListener<CType> findBuiltInValidationListener(final CType component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<MType> validator) {
         Class<MType> modelType = validator.modelType();
         if (component instanceof JList && Integer[].class.equals(modelType)) {
-            return SwingValidationListenerFactories.createJListValidationListener(JList.class.cast(component), strategy, validationUI, (Validator<Integer[]>) validator);
+            return (ValidationListener<CType>) SwingValidationListenerFactories.createJListValidationListenerConverted((JList) component, strategy, validationUI, ValidatorUtils.cast(Integer[].class, validator));
         } else if (component instanceof JList && ListSelectionModel.class.isAssignableFrom(modelType)) {
             return SwingValidationListenerFactories.createJListValidationListener(JList.class.cast(component), strategy, validationUI, (Validator<ListSelectionModel>) validator);
         } else if (component instanceof JTextComponent && String.class.equals(modelType)) {
@@ -176,10 +176,6 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
     }
 
     protected abstract ValidationListener<CompType> createListener (final CompType component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<ModelType> validator);
-
-    static <CompType, ModelType> ValidationListener<CompType> createValidationListener(final CompType component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<ModelType>... validators) {
-        return createValidationListener(component, strategy, validationUI, ValidatorUtils.merge(validators));
-    }
 
     <T, R> ValidationListenerFactory<T, R> as (Class<T> actualCompType, Class<R> actualModelType, T comp) {
         return new Cast<T, R, CompType, ModelType> (actualCompType, actualModelType, comp, this);

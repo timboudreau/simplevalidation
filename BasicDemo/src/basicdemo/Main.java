@@ -2,6 +2,7 @@ package basicdemo;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import org.netbeans.validation.api.ValidatorUtils;
 import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
 import org.netbeans.validation.api.ui.ValidationGroup;
 import org.netbeans.validation.api.ui.swing.ValidationPanel;
@@ -27,9 +28,9 @@ public class Main {
     ValidationGroup group = panel.getValidationGroup();
 
     //This is all we do to validate the URL:
-    group.add(f, StringValidators.REQUIRE_NON_EMPTY_STRING,
-            StringValidators.NO_WHITESPACE,
-            StringValidators.URL_MUST_BE_VALID);
+    group.add(f, ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,
+            ValidatorUtils.merge(StringValidators.NO_WHITESPACE,
+            StringValidators.URL_MUST_BE_VALID)));
 
     //Convenience method to show a simple dialog
     if (panel.showOkCancelDialog("URL")) {
@@ -40,4 +41,6 @@ public class Main {
       System.exit(1);
     }
   }
+
+  private Main() {}
 }

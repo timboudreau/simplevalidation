@@ -52,10 +52,10 @@ import java.util.logging.Logger;
 final class CustomLevelValidator<T> extends AbstractValidator<T> {
     private final Validator<T> other;
     private final Severity customSeverity;
-    CustomLevelValidator(Severity customSeverity, Validator<T>... others) {
-        super (others[0].modelType());
+    CustomLevelValidator(Severity customSeverity, Validator<T> other) {
+        super (other.modelType());
         this.customSeverity = customSeverity;
-        other = ValidatorUtils.merge(others);
+        this.other = other;
         if (customSeverity == Severity.FATAL) {
             Logger.getLogger(CustomLevelValidator.class.getName()).log(Level.INFO,
                     "Pointless to filter to Severity.FATAL",
