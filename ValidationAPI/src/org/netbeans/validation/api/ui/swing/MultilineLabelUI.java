@@ -120,7 +120,11 @@ final class MultilineLabelUI extends LabelUI {
 
     @Override
     public Dimension getMaximumSize(JComponent c) {
-        int maxw = c.getGraphicsConfiguration().getDevice().getDisplayMode().getWidth();
+        GraphicsConfiguration gc = c.getGraphicsConfiguration();
+        if (gc == null) {
+            return super.getMaximumSize(c);
+        }
+        int maxw = gc.getDevice().getDisplayMode().getWidth();
         String s = ((JLabel) c).getText();
         Insets ins = c.getInsets();
         Graphics2D g = createOffscreenGraphics(c);
