@@ -167,7 +167,7 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
             return SwingValidationListenerFactories.createJComboBoxValidationListener(JComboBox.class.cast(component), strategy, validationUI, (Validator<String>) validator);
         } else if (component instanceof JComboBox && ComboBoxModel.class.isAssignableFrom(modelType)) {
             return SwingValidationListenerFactories.createJComboBoxValidationListener(JComboBox.class.cast(component), strategy, validationUI, (Validator<ComboBoxModel>) validator);
-        } else if (ButtonModel.class.equals(modelType) && component.getClass().isArray() && component.getClass().getComponentType().isAssignableFrom(AbstractButton.class)) {
+        } else if (ButtonModel[].class.equals(modelType) && component.getClass().isArray() && component.getClass().getComponentType().isAssignableFrom(AbstractButton.class)) {
             return SwingValidationListenerFactories.createButtonsValidationListener(AbstractButton[].class.cast(component), validationUI, (Validator<ButtonModel[]>) validator);
         } else if (Integer[].class.equals(modelType) && component.getClass().isArray() && component.getClass().getComponentType().isAssignableFrom(AbstractButton.class)) {
             return SwingValidationListenerFactories.createButtonsValidationListener(AbstractButton[].class.cast(component), validationUI, (Validator<Integer[]>) validator);
