@@ -456,6 +456,12 @@ public enum StringValidators implements Validator<String> {
      */
     public static Validator<String> lessThan(int amount) {
         return new BoundValidator(amount, true);
+    }
+
+    public static Validator<String> between(int min, int max) {
+        BoundValidator a = new BoundValidator(Math.min(min, max), false);
+        BoundValidator b = new BoundValidator(Math.max(max, min), true);
+        return ValidatorUtils.merge(a, b);
     }    
 
     public Class<String> modelType() {
