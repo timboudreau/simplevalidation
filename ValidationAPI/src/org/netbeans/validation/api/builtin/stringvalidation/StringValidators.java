@@ -437,9 +437,28 @@ public enum StringValidators implements Validator<String> {
     public static Validator<String> maxLength (int length) {
         return new MaximumLength(length);
     }
+    
+    /**
+     * Validate that a string evaluates to a number greater
+     * than an amount
+     * @param amount The amount
+     * @return A validator
+     */
+    public static Validator<String> greaterThan(int amount) {
+        return new BoundValidator(amount, false);
+    }
+
+    /**
+     * Validate that a string evaluates to a number less
+     * than an amount
+     * @param amount The amount
+     * @return A validator
+     */
+    public static Validator<String> lessThan(int amount) {
+        return new BoundValidator(amount, true);
+    }    
 
     public Class<String> modelType() {
         return String.class;
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2013 Tim Boudreau. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common
@@ -21,7 +21,7 @@
  * your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- * Contributor(s):
+ * Contributor(s): Tim Boudreau
  *
  * The Original Software is NetBeans. The Initial Developer of the Original
  * Software is Sun Microsystems, Inc. Portions Copyright 1997-2006 Sun
@@ -40,29 +40,43 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
-import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import org.netbeans.validation.api.Problems;
+import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
  *
  * @author Tim Boudreau
  */
-final class CharsetValidator extends StringValidator {
+public class BoundValidator implements Validator<String> {
+
+    private final int value;
+    private final boolean less;
+
+    BoundValidator(int value, boolean less) {
+        this.value = value;
+        this.less = less;
+    }
 
     @Override
     public void validate(Problems problems, String compName, String model) {
         try {
-            Charset.forName(model);
-        } catch (IllegalCharsetNameException badName) {
-            problems.add (NbBundle.getMessage(CharsetValidator.class,
-                    "ILLEGAL_CHARSET_NAME", compName, model)); //NOI18N
-        } catch (UnsupportedCharsetException unsup) {
-            problems.add (NbBundle.getMessage(CharsetValidator.class,
-                    "UNSUPPORTED_CHARSET_NAME", compName, model)); //NOI18N
+            int val = (int) Double.parseDouble(model);
+            boolean test = less ? val < value : val > value;
+            if (!test) {
+                String problem = NbBundle.getMessage(
+                        BoundValidator.class,
+                        less ? "ERR_TOO_LARGE" : "ERR_TOO_SMALL", compName, model); //NOI18N
+                problems.add(problem);
+            }
+        } catch (NumberFormatException e) {
+            //do nothing - if someone wants not-a-number validation, they should
+            //chain an IntegerDocumentValidator or similar
         }
     }
 
+    @Override
+    public Class<String> modelType() {
+        return String.class;
+    }
 }

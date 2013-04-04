@@ -47,7 +47,7 @@ import org.netbeans.validation.api.AbstractValidator;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
 public class ConverterTest {
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void testFind() {
         assertNotNull (Converter.find(String.class, Document.class));
         try {
