@@ -17,6 +17,36 @@
         to handle most common situations, such as validating numbers,
         email addresses, urls and so forth.
     </description>
+        <licenses>
+        <license>
+            <name>CDDL</name>
+            <url>http://www.sun.com/cddl/cddl.html</url>
+        </license>
+        <license>
+            <name>GPL-CP</name>
+            <url>http://www.gnu.org/software/classpath/license.html</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>tim</id>
+            <name>Tim Boudreau</name>
+            <url>http://kenai.com/people/5777-Tim-Boudreau</url>
+        </developer>
+        <developer>
+            <id>hugoheden</id>
+            <url>http://kenai.com/people/25343-hugoheden</url>
+        </developer>
+        <developer>
+            <id>mkleint</id>
+            <name>Milos Kleint</name>
+            <url>http://kenai.com/people/2114-mkleint</url>
+        </developer>
+    </developers>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://kenai.com/jira/browse/SIMPLEVALIDATION</url>
+    </issueManagement>
     <url>http://simplevalidation.kenai.com/</url>
     <modules>
         <module>ValidationAPI</module>
@@ -75,4 +105,3 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 </project>
-
