@@ -72,6 +72,11 @@ class EmailAddressValidator extends StringValidator {
             address = model;
         }
         String[] nameAndHost = address.split("@");
+        if (nameAndHost.length == 0) {
+            problems.add (NbBundle.getMessage(EmailAddressValidator.class,
+                    "NO_AT_SYMBOL", compName, address));
+            return;
+        }        
         if (nameAndHost.length == 1 && nameAndHost[0].contains("@")) {
             problems.add(NbBundle.getMessage(EmailAddressValidator.class,
                     "EMAIL_MISSING_HOST", compName, nameAndHost[0]));

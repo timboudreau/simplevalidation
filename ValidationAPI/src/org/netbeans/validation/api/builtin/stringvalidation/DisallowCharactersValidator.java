@@ -41,7 +41,6 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
@@ -49,10 +48,12 @@ import org.openide.util.NbBundle;
  * @author Tim Boudreau
  */
 final class DisallowCharactersValidator extends StringValidator {
+
     private char[] chars;
 
     public DisallowCharactersValidator(char[] chars) {
-        this.chars = chars;
+        this.chars = new char[chars.length];
+        System.arraycopy(chars, 0, this.chars, 0, chars.length);
     }
 
     private String asString() {
@@ -64,7 +65,7 @@ final class DisallowCharactersValidator extends StringValidator {
         for (char c : chars) {
             for (char cc : model.toCharArray()) {
                 if (cc == c) {
-                    problems.add (NbBundle.getMessage(DisallowCharactersValidator.class,
+                    problems.add(NbBundle.getMessage(DisallowCharactersValidator.class,
                             "DISALLOWED_CHARS", asString(), compName)); //NOI18N
                     return;
                 }

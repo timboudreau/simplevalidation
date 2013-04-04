@@ -57,7 +57,7 @@ final class IpAddressValidator extends StringValidator {
                     "HOST_STARTS_OR_ENDS_WITH_PERIOD", s)); //NOI18N
             return;
         }
-        if (s.indexOf(" ") >= 0 || s.indexOf ("\t") >= 0) {
+        if (s.indexOf(' ') >= 0 || s.indexOf ('\t') >= 0) {
             problems.add(NbBundle.getMessage(IpAddressValidator.class,
                     "IP_ADDRESS_CONTAINS_WHITESPACE", compName, s)); //NOI18N
             return;
@@ -75,7 +75,7 @@ final class IpAddressValidator extends StringValidator {
         }
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
-            if (i == parts.length - 1 && part.indexOf(":") > 0) { //NOI18N
+            if (i == parts.length - 1 && part.indexOf(':') > 0) { //NOI18N
                 if (part.endsWith(":")) {
                     problems.add(NbBundle.getMessage(IpAddressValidator.class,
                             "TOO_MANY_COLONS", compName, s)); //NOI18N

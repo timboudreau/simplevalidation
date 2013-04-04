@@ -42,14 +42,16 @@ package org.netbeans.validation.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import org.openide.util.NbBundle;
 
 /**
  * A collection of problems, to which a Validator can add additional problems.
  *
  * @author Tim Boudreau
  */
-public final class Problems {
+public final class Problems implements Iterable<Problem> {
     private final List<Problem> problems = new ArrayList<Problem>();
     private boolean hasFatal;
     /**
@@ -102,6 +104,33 @@ public final class Problems {
     }
 
     /**
+     * Create a new Problems with the initial (fatal) problem.
+     * @param message A localized message
+     * @return A Problems
+     */
+    public static Problems create (String message) {
+        assert message != null;
+        Problems result = new Problems();
+        result.add(message);
+        return result;
+    }
+
+    /**
+     * Create a Problems which contains the localized message belonging to
+     * the passed class and key, according to the lookup semantics of
+     * Localizer.
+     * @param localizerClass A class which (or whose package) has an associated
+     * resource bundle
+     * @param bundleKey The key in that bundle
+     * @return a Problems with a single fatal problem in it
+     */
+    public static Problems create(Class<?> localizerClass, String bundleKey) {
+        assert bundleKey != null;
+        assert localizerClass != null;
+        return create(NbBundle.getMessage(localizerClass, bundleKey));
+    }
+
+    /**
      * Get the {@code Problem} with the highest severity.
      *
      * If there is more than one problem with equal severity, <i>the
@@ -127,14 +156,40 @@ public final class Problems {
      * @return A list of Problems
      */
     public final List<? extends Problem> allProblems() {
-        List<Problem> result = new ArrayList<Problem>(problems.size());
-        result.addAll(problems);
+        List<Problem> result = new ArrayList<Problem>(problems);
         Collections.sort(result);
         return result;
     }
 
     @Override
     public String toString() {
-        return problems.toString();
+        StringBuilder sb = new StringBuilder();
+        for (Problem p : problems) {
+            if (sb.length() == 0) {
+                sb.append (p);
+            } else {
+                sb = new StringBuilder (
+                    NbBundle.getMessage(Problems.class, "CONCAT_PROBLEMS", sb, p));
+            }
+        }
+        return sb.toString();
+    }
+    
+    public void throwIfFatalPresent(String msg) {
+        if (hasFatal()) {
+            throw new InvalidInputException(msg, this);
+        }
+    }
+    
+    
+    public void throwIfFatalPresent() {
+        if (hasFatal()) {
+            throw new InvalidInputException(this);
+        }
+    }    
+
+    @Override
+    public Iterator<Problem> iterator() {
+        return Collections.unmodifiableCollection(problems).iterator();
     }
 }
