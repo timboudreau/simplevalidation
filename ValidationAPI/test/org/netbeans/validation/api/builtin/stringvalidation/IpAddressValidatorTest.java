@@ -65,6 +65,7 @@ public class IpAddressValidatorTest {
         assertInvalid ("192.168. 2.1");
         assertInvalid (".192.168.2.1");
         assertInvalid ("192.168.2.bad");
+        assertInvalid ("192.168.1");
         assertInvalid ("foo.bar.com");
         assertInvalid ("foo.bar.com:2080");
         assertInvalid ("foo");

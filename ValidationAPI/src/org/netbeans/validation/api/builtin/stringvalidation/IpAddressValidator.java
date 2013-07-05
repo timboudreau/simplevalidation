@@ -68,7 +68,7 @@ final class IpAddressValidator extends StringValidator {
                     "TOO_MANY_LABELS", s)); //NOI18N
             return;
         }
-        if( parts.length < 3) {
+        if( parts.length < 4) {
             problems.add(NbBundle.getMessage(IpAddressValidator.class,
                             "ADDR_PART_BAD", s)); //NOI18N
                     return;
