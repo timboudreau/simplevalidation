@@ -42,37 +42,42 @@
 package org.netbeans.validation.api.ui.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JToolTip;
-import javax.swing.SwingUtilities;
-import javax.swing.border.Border;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Toolkit;
-import java.awt.event.HierarchyListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.RGBImageFilter;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JToolTip;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import org.netbeans.validation.api.Problem;
 import org.netbeans.validation.api.Severity;
 import org.netbeans.validation.api.ui.ValidationUI;
@@ -115,18 +120,18 @@ import org.netbeans.validation.api.ui.ValidationUI;
  *  SwingComponentDecorationFactory.set(new SimpleDefaultDecorator(){
  *   protected Color getComponentOverlayColor(Severity s, JComponent decoratedComponent){
  *       if(s == Severity.INFO) {
- *           return null; // Skip the gray background for INFO 
+ *           return null; // Skip the gray background for INFO
  *       }
  *       int alpha = 26; // Corresponds to 0.10f -- rather strong actually
  *       return new Color(s.color().getRed(), s.color().getGreen(), s.color().getBlue(), alpha);
  *   }
- *   
+ *
  *   protected Point getDecorationLocation(Severity s, JComponent decoratedComponent, Dimension decorationIconSize) {
  *       return new Point( decoratedComponent.getWidth() - (int)(0.6*decorationIconSize.width), -2);
  *   }
  *
  *   protected Image getDecorationImage(Severity severity, JComponent decoratedComponent) {
- *       return severity.image(); // bigger than the small severity.badge() -- a bit too big actually, will need to be scaled down 
+ *       return severity.image(); // bigger than the small severity.badge() -- a bit too big actually, will need to be scaled down
  *   }
  *
  *   protected Double getDecorationImageScaling(Severity s, JComponent decoratedComponent) {
@@ -146,16 +151,17 @@ import org.netbeans.validation.api.ui.ValidationUI;
  *    }
  *});
  * }</pre></blockquote>
- * 
+ *
  * @author Tim Boudreau
  * @author Hugo Heden
+ * @author Philip Stoehrer
  */
 final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
 
     private Icon fatalIconTransp = null;
     private Icon warningIconTransp = null;
     private Icon infoIconTransp = null;
-    
+
     @Override
     public ValidationUI decorationFor(JComponent c) {
         return new ToolTippedIconLabel(c, this);
@@ -172,7 +178,7 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
      *
      * <p> Otherwise, the toolTip will contain the JLabel passed to
      * this method. An example implementation would be the following.
-     * 
+     *
      * <blockquote><pre>{@code
      * ttLabel.setText(problem.getMessage());
      * return true;
@@ -186,8 +192,8 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
      * ttLabel.setIcon(null);
      * return true;
      * }</pre></blockquote>
-     * 
-     * 
+     *
+     *
      * @param problem The problem that has occured.
      * @param decoratedComponent The component in which the problem has occured.
      * @param ttLabel label that will be contained within the tooltip
@@ -206,7 +212,7 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
         ttLabel.setIcon(problem.severity().icon());
         ttLabel.setForeground(problem.severity().color());
         Border b = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(problem.severity().color(), 1),
-                BorderFactory.createMatteBorder(3, 3, 3, 3, bg));
+                                                      BorderFactory.createMatteBorder(3, 3, 3, 3, bg));
         ttLabel.setBorder(b);
         ttLabel.setText(problem.getMessage());
         return true;
@@ -221,7 +227,7 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
      * the returned Color is null, the component will not get any
      * color overlay.
      *
-     * 
+     *
      * @param s The {@code Severity} of the problem the component is to be decorated for.
      * @param decoratedComponent The component to be decorated
      * @return A {@code Color} to be painted over the bounding rectangle over the component,
@@ -347,7 +353,7 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
             // TODO: Better rescaling if downscaling? See code example on
             // http://today.java.net/pub/a/today/2007/04/03/perils-of-image-getscaledinstance.html
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                    RenderingHints.VALUE_INTERPOLATION_BICUBIC); // Slowest but with highest quality
+                                RenderingHints.VALUE_INTERPOLATION_BICUBIC); // Slowest but with highest quality
             g2.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
             g2.dispose();
             image = scaledImg;
@@ -358,7 +364,7 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
         if (alpha != null) {
             final Point translate =
                     this.getDecorationLocation(null, decoratedComponent,
-                    new Dimension(icon.getIconWidth(), icon.getIconWidth()));
+                                               new Dimension(icon.getIconWidth(), icon.getIconWidth()));
             final int dcW = decoratedComponent.getWidth();
             final int dcH = decoratedComponent.getHeight();
             ImageFilter filter = new RGBImageFilter() {
@@ -396,36 +402,36 @@ final class SimpleDefaultDecorator extends SwingComponentDecorationFactory {
  * by this method are different than the insets of the original
  * border, then the UI layout will "jump".  <p> Severity.color() and
  * Severity.image() are handy here.
- */
+     */
 static final class ColorizingBorder implements Border, ValidationUI {
 
-    private SimpleDefaultDecorator decorator;
-    private final JComponent decoratedComponent;
-    private final Border real;
-    private Severity severity = null;
+        private SimpleDefaultDecorator decorator;
+        private final JComponent decoratedComponent;
+        private final Border real;
+        private Severity severity = null;
 
     public ColorizingBorder(JComponent c, SimpleDefaultDecorator decorator) {
-        this.decorator = decorator;
-        this.decoratedComponent = c;
-        this.real = (c.getBorder() != null ? c.getBorder() : BorderFactory.createEmptyBorder());
-        c.setBorder(this);
-    }
+            this.decorator = decorator;
+            this.decoratedComponent = c;
+            this.real = (c.getBorder() != null ? c.getBorder() : BorderFactory.createEmptyBorder());
+            c.setBorder(this);
+        }
 
-    @Override
+        @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 
-        real.paintBorder(c, g, x, y, width, height);
+            real.paintBorder(c, g, x, y, width, height);
         if (severity == null) {
-            return;
-        }
-        Color niceTransparentColorForRectangle =
-                decorator.getComponentOverlayColor(severity, decoratedComponent);
+                return;
+            }
+            Color niceTransparentColorForRectangle =
+                    decorator.getComponentOverlayColor(severity, decoratedComponent);
         if (niceTransparentColorForRectangle == null) {
-            return;
-        }
-        g.setColor(niceTransparentColorForRectangle);
-        g.fillRect(x, y, width, height);
-    // Graphics2D gg = (Graphics2D) g;
+                return;
+            }
+            g.setColor(niceTransparentColorForRectangle);
+            g.fillRect(x, y, width, height);
+            // Graphics2D gg = (Graphics2D) g;
 //         Composite composite = gg.getComposite();
 //        AlphaComposite alpha =
 //                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
@@ -442,17 +448,17 @@ static final class ColorizingBorder implements Border, ValidationUI {
 //            int w = Math.max (2, ins.left);
 //            int bx = x + width - (badge.getHeight() + (w * 2));
 //            gg.drawRenderedImage(badge, AffineTransform.getTranslateInstance(bx, by));
-    }
+        }
 
         @Override
     public Insets getBorderInsets(Component c) {
-        return real.getBorderInsets(c);
-    }
+            return real.getBorderInsets(c);
+        }
 
         @Override
     public boolean isBorderOpaque() {
-        return false;
-    }
+            return false;
+        }
 
         @Override
     public void showProblem(Problem problem) {
@@ -460,234 +466,278 @@ static final class ColorizingBorder implements Border, ValidationUI {
             severity = null;
         }  else {
             severity = problem.severity();
-        //c.repaint();
+                //c.repaint();
         }
     }
 
     public void clearProblem() {
-        severity = null;
+            severity = null;
+        }
     }
-}
 
-/**
- * A JLabel with a decorative icon (that will update when a new {@code
- * Problem} appears) and that displays an informative tooltip.
- * @author heden
- */
+    /**
+     * A JLabel with a decorative icon (that will update when a new {@code
+     * Problem} appears) and that displays an informative tooltip.
+     * @author heden
+     */
 static final class ToolTippedIconLabel extends JLabel implements ValidationUI {
 
-    final private JToolTip tt = new JToolTip();
-    final private JLabel ttLabel = new JLabel();
-    final private JComponent decoratedComponent;
-    final private ValidationUI colorizingBorder;
-    private Problem currentProblem = null;
-    private MouseEvent lastMouseEvent = null;
-    private boolean hasAddedToPane = false;
-    private SimpleDefaultDecorator decorator;
+        final private JToolTip tt = new JToolTip();
+        final private JLabel ttLabel = new JLabel();
+        final private JComponent decoratedComponent;
+        final private ValidationUI colorizingBorder;
+        private Problem currentProblem = null;
+        private MouseEvent lastMouseEvent = null;
+        private boolean hasAddedToPane = false;
+        private SimpleDefaultDecorator decorator;
+        private JViewport viewPort;
 
-    ToolTippedIconLabel(final JComponent component, SimpleDefaultDecorator decorator) {
-        this.decorator = decorator;
-        this.decoratedComponent = component;
-        this.colorizingBorder = new ColorizingBorder(component, decorator);
-        this.setOpaque(false);
+        ToolTippedIconLabel(final JComponent component, SimpleDefaultDecorator decorator) {
+            this.decorator = decorator;
+            this.decoratedComponent = component;
+            this.colorizingBorder = new ColorizingBorder(component, decorator);
+            this.setOpaque(false);
 
-        // Using HierarchyListener instead of ComponentListener.componentShown()
-        // and ComponentListener.componentHidden() to handle JTabbedPane, see
-        // issue 32
+            // Using HierarchyListener instead of ComponentListener.componentShown()
+            // and ComponentListener.componentHidden() to handle JTabbedPane, see
+            // issue 32
         decoratedComponent.addHierarchyListener(new HierarchyListener() {
                 @Override
             public void hierarchyChanged(HierarchyEvent e) {
                 if((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0){
-                    tryDecorationIcon();
-                    ToolTippedIconLabel.this.setVisible(
+                        tryDecorationIcon();
+                        ToolTippedIconLabel.this.setVisible(
                             decoratedComponent.isShowing() &&
                             currentProblem != null
                             );
+                    }
                 }
-            }
-        });
+            });
+            decoratedComponent.addAncestorListener(new AncestorListener() {
+                @Override
+                public void ancestorAdded(AncestorEvent event) {
+                    tryDecorationIcon();
+                }
 
-        decoratedComponent.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void ancestorRemoved(AncestorEvent event) {
+                    tryDecorationIcon();
+                }
 
-            @Override
-            public void componentMoved(ComponentEvent evt) {
-                tryDecorationIcon();
-            }
+                @Override
+                public void ancestorMoved(AncestorEvent event) {
+                    tryDecorationIcon();
+                }
+            });
 
-            @Override
-            public void componentResized(ComponentEvent evt) {
-                tryDecorationIcon();
-            }
-        });
-        
-        this.addMouseListener(new MouseAdapter() {
+            decoratedComponent.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentMoved(ComponentEvent evt) {
+                    tryDecorationIcon();
+                }
 
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                lastMouseEvent = e;
-            }
+                @Override
+                public void componentResized(ComponentEvent evt) {
+                    tryDecorationIcon();
+                }
+            });
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    lastMouseEvent = e;
+                }
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                lastMouseEvent = null;
-            }
-        });
-        this.addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    lastMouseEvent = null;
+                }
+            });
+            this.addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    lastMouseEvent = e;
+                }
+            });
 
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                lastMouseEvent = e;
-            }
-        });
-
-        //////////////////////////////////////////
-        // Fiddle with tooltip
-        tt.setLayout(new BorderLayout());
-        tt.add(ttLabel);
-        tt.setBorder(null);
-    }
-
-    @Override
-    public JToolTip createToolTip() {
-        assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
-        assert tt != null;
-        return tt;
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        super.setVisible(visible);
-        if (visible && currentProblem != null) {
-            colorizingBorder.showProblem(currentProblem);
-        } else {
-            colorizingBorder.clearProblem();
+            //////////////////////////////////////////
+            // Fiddle with tooltip
+            tt.setLayout(new BorderLayout());
+            tt.add(ttLabel);
+            tt.setBorder(null);
         }
-    }
 
-    @Override
-    public void showProblem(final Problem problem) {
-        // JComponent has been newly validated.
-        assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
-        if (problem != null && problem.equals(currentProblem)) {
-            return;
+        @Override
+        public JToolTip createToolTip() {
+            assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
+            assert tt != null;
+            return tt;
         }
-        colorizingBorder.showProblem(problem);
-        currentProblem = problem;
-        if (currentProblem == null) {
-            if (this.isVisible()) {
-                this.setVisible(false);
-            }
-            if (tt.isShowing()) {
-                // Bring down tooltip if it isShowing
-                final MouseEvent theEvent = lastMouseEvent; // lastEvent will be set to null in mouseExited, so hold a local reference here.
-                this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, 0, 0, 0, false));
-                lastMouseEvent = theEvent;
-            }
-            return;
-        }
-        ////////////////////////////////////////////////////
-        // Fiddle with tooltip. We do not do this within tryDecorationIcon(),
-        // because it is only necessary to do this in updateProblem(). Also, we do
-        // this *before* calling tryDecorationIcon(), because that method can
-        // return false in cases when we still want to prepare the tooltip.
-        problemUpdateTooltip(problem);
-        if (!this.tryDecorationIcon()) {
-            return;
-        }
-        this.setVisible(true);
-    }
 
-    private void problemUpdateTooltip(Problem problem) {
-        if (decorator.getDecorationImage(problem.severity(), decoratedComponent) == null
-                || !decorator.configureToolTipLabel(problem, decoratedComponent, ttLabel)) {
-            // No tooltip if no decoration, and also no toolTip if configureToolTipLabel
-            // returned false
-            tt.setVisible(false);
-            if(this.getToolTipText() != null) {
-                this.setToolTipText(null); // "Unregister" from ToolTipManager..
+        @Override
+        public void setVisible(boolean visible) {
+            super.setVisible(visible);
+            if (visible && currentProblem != null) {
+                colorizingBorder.showProblem(currentProblem);
+            } else {
+                colorizingBorder.clearProblem();
             }
-            return;
         }
-        tt.setVisible(true);
-        if(this.getToolTipText() == null) {
-            this.setToolTipText(""); // "Register" with ToolTipManager..
+
+        @Override
+        public void showProblem(final Problem problem) {
+            // JComponent has been newly validated.
+            assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
+            if (problem != null && problem.equals(currentProblem)) {
+                return;
+            }
+            colorizingBorder.showProblem(problem);
+            currentProblem = problem;
+            if (currentProblem == null) {
+                if (this.isVisible()) {
+                    this.setVisible(false);
+                }
+                if (tt.isShowing()) {
+                    // Bring down tooltip if it isShowing
+                    final MouseEvent theEvent = lastMouseEvent; // lastEvent will be set to null in mouseExited, so hold a local reference here.
+                    this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_EXITED, System.currentTimeMillis(), 0, 0, 0, 0, false));
+                    lastMouseEvent = theEvent;
+                }
+                return;
+            }
+            ////////////////////////////////////////////////////
+            // Fiddle with tooltip. We do not do this within tryDecorationIcon(),
+            // because it is only necessary to do this in updateProblem(). Also, we do
+            // this *before* calling tryDecorationIcon(), because that method can
+            // return false in cases when we still want to prepare the tooltip.
+            problemUpdateTooltip(problem);
+            if (!this.tryDecorationIcon()) {
+                return;
+            }
+            this.setVisible(true);
         }
-        tt.setPreferredSize(ttLabel.getPreferredSize());
+
+        private void problemUpdateTooltip(Problem problem) {
+            if (decorator.getDecorationImage(problem.severity(), decoratedComponent) == null
+                    || !decorator.configureToolTipLabel(problem, decoratedComponent, ttLabel)) {
+                // No tooltip if no decoration, and also no toolTip if configureToolTipLabel
+                // returned false
+                tt.setVisible(false);
+                if(this.getToolTipText() != null) {
+                    this.setToolTipText(null); // "Unregister" from ToolTipManager..
+                }
+                return;
+            }
+            tt.setVisible(true);
+            if(this.getToolTipText() == null) {
+                this.setToolTipText(""); // "Register" with ToolTipManager..
+            }
+            tt.setPreferredSize(ttLabel.getPreferredSize());
         if (lastMouseEvent != null) {
-            // * If the tooltip is showing: "adapt" the *size* of the tooltip by bringing
-            // it down and up again -- by emulating some mouse movements.
-            // * If the tooltip is not showing but the mouse pointer seems to be
-            // above icon, fire up tooltip.
-            final MouseEvent theEvent = lastMouseEvent; // lastEvent will be set to null in mouseExited, so hold a local reference here.
-            this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_EXITED, System.currentTimeMillis() - 100, theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
-            assert lastMouseEvent == null;
-            this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis() - 50, theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
-            this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
-            assert lastMouseEvent != null;
+                // * If the tooltip is showing: "adapt" the *size* of the tooltip by bringing
+                // it down and up again -- by emulating some mouse movements.
+                // * If the tooltip is not showing but the mouse pointer seems to be
+                // above icon, fire up tooltip.
+                final MouseEvent theEvent = lastMouseEvent; // lastEvent will be set to null in mouseExited, so hold a local reference here.
+                this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_EXITED, System.currentTimeMillis() - 100, theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
+                assert lastMouseEvent == null;
+                this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_ENTERED, System.currentTimeMillis() - 50, theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
+                this.dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), theEvent.getModifiers(), theEvent.getX(), theEvent.getY(), 0, false));
+                assert lastMouseEvent != null;
+            }
+            ////////////////////////////////////////////////////
         }
-    ////////////////////////////////////////////////////
-    }
 
-    /**
+        /**
      * Set/Update the location of the icon so that it follows the
      * component at resize etc.
-     *
+         *
      * @return true if there is an icon and the state of the UI is
      * such that it is ready to be set visible.
-     *
+         *
      * @return false otherwise: If there is currently no problem,
      * or if the UI has not finished laying out
      * (so that the location of the decoration icon can not yet be
      * calculated), or if the decorator has been configured in a way
      * that there should be no Icon visible at all for the current
      * severity (only the ColorizingBorder is to be used)
-     */
+         */
     private boolean tryDecorationIcon() {
-        assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
+            assert SwingUtilities.isEventDispatchThread() : "Not on EventDispatchThread";
         if (!decoratedComponent.isShowing()) {
-            // This is before UI has finished being laid out. Can't do
-            // anything now, wait until component listener gets notified.
-            // (problemUpdate() has been called during initialization --
-            // the UI has errors from the start.)
-            return false;
-        }
-        assert JLayeredPane.getLayeredPaneAbove(decoratedComponent) != null :
-                "JLayeredPane.getLayeredPaneAbove(decoratedComponent) unexpectedly returned null";
-        // Actually this is not so unexpected if we're not in a JFrame, JDialog, JApplet or JInternalFrame.
-        // See http://java.sun.com/docs/books/tutorial/uiswing/components/layeredpane.html .
-        // Should we account for this possibility somehow?
+                // This is before UI has finished being laid out. Can't do
+                // anything now, wait until component listener gets notified.
+                // (problemUpdate() has been called during initialization --
+                // the UI has errors from the start.)
+                return false;
+            }
+            assert JLayeredPane.getLayeredPaneAbove(decoratedComponent) != null :
+                    "JLayeredPane.getLayeredPaneAbove(decoratedComponent) unexpectedly returned null";
+            // Actually this is not so unexpected if we're not in a JFrame, JDialog, JApplet or JInternalFrame.
+            // See http://java.sun.com/docs/books/tutorial/uiswing/components/layeredpane.html .
+            // Should we account for this possibility somehow?
         if (!hasAddedToPane) {
             JLayeredPane.getLayeredPaneAbove(decoratedComponent).add(ToolTippedIconLabel.this,
-                    new Integer(JLayeredPane.getLayer(decoratedComponent) + 10));
-            hasAddedToPane = true;
-        }
+                                                                         new Integer(JLayeredPane.getLayer(decoratedComponent) + 10));
+                hasAddedToPane = true;
+            }
         if (currentProblem == null) {
-            // No point in calculating location now, we don't know our size yet.
-            // (We have not encountered a problem yet so there's no icon. We're
-            // here because the ComponentListener has been notified about a resize or a move.)
-            return false;
-        }
-        Icon icon = decorator.getDecorationIcon(currentProblem.severity(), decoratedComponent);
-        if (icon == null) {
-            return false;
-        }
-        this.setIcon(icon);
-        this.setSize(new Dimension(getIcon().getIconWidth(), getIcon().getIconHeight()));
+                // No point in calculating location now, we don't know our size yet.
+                // (We have not encountered a problem yet so there's no icon. We're
+                // here because the ComponentListener has been notified about a resize or a move.)
+                return false;
+            }
+            Icon icon = decorator.getDecorationIcon(currentProblem.severity(), decoratedComponent);
+            if (icon == null) {
+                return false;
+            }
+            viewPort = findViewPortFor(decoratedComponent);
+            this.setIcon(icon);
+            this.setSize(new Dimension(icon.getIconWidth(), icon.getIconHeight()));
 
-        Point p = decoratedComponent.getLocationOnScreen();
-        SwingUtilities.convertPointFromScreen(p, this.getParent());
+            Rectangle iconRect = getRectangleForDecoratorIcon(icon);
+            if (viewPort != null) {
+                Rectangle viewPortRect = getRectangleOnScreenFor(viewPort);
+                if (!viewPortRect.contains(iconRect)) {
+                    this.setIcon(null);
+                    return false;
+                }
+            }
 
-        Point transl =
-                decorator.getDecorationLocation(null, decoratedComponent,
-                new Dimension(this.getIcon().getIconWidth(), this.getIcon().getIconHeight()));
-        p.translate(transl.x, transl.y);
-        this.setLocation(p);
-        return true;
-    }
+            Point iconPos = iconRect.getLocation();
+            SwingUtilities.convertPointFromScreen(iconPos, this.getParent());
+            this.setLocation(iconPos);
+
+            return true;
+        }
+
+        private Rectangle getRectangleOnScreenFor(JComponent component) {
+            assert component != null;
+
+            Point pos = component.getLocationOnScreen();
+            return new Rectangle(pos.x, pos.y, component.getWidth(), component.getHeight());
+        }
+
+        private JViewport findViewPortFor(JComponent comp) {
+            Container c = comp.getParent();
+            while (c != null) {
+                if (c instanceof JViewport) {
+                    return (JViewport) c;
+                }
+                c = c.getParent();
+            }
+            return null;
+        }
 
         public void clearProblem() {
             showProblem(null);
         }
+
+        private Rectangle getRectangleForDecoratorIcon(Icon icon) {
+            Point iconPos = decoratedComponent.getLocationOnScreen();
+            Point transl = decorator.getDecorationLocation(null, decoratedComponent,
+                new Dimension(icon.getIconWidth(), icon.getIconHeight()));
+            iconPos.translate(transl.x, transl.y);
+            return new Rectangle(iconPos.x, iconPos.y, icon.getIconWidth(), icon.getIconHeight());
+        }
     }
 }
-
