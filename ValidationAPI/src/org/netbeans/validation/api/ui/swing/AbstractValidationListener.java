@@ -106,11 +106,8 @@ public abstract class AbstractValidationListener<CompType extends JComponent, T>
         if (!comp.isEnabled()) {
             return;
         }
-        Problems problems = new Problems();
-        validator.validate(problems, SwingValidationGroup.nameForComponent(comp),
-                getModelObject(comp)); //XXX generics quirk
-        onValidate(getTarget(), problems.getLeadProblem());
+        validator.validate(ps, SwingValidationGroup.nameForComponent(comp),
+                 getModelObject(comp)); //XXX generics quirk
+        onValidate(getTarget(), ps.getLeadProblem());
     }
-
-
 }
