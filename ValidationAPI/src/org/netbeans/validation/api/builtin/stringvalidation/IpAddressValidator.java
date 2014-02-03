@@ -41,7 +41,6 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
@@ -89,7 +88,7 @@ final class IpAddressValidator extends StringValidator {
                                 "ADDR_PART_NEGATIVE", pts[1])); //NOI18N
                         return;
                     }
-                    if (addr > 256) {
+                    if (addr > 255) {
                         problems.add(NbBundle.getMessage(IpAddressValidator.class,
                                 "ADDR_PART_HIGH", pts[1])); //NOI18N
                         return;
@@ -135,7 +134,7 @@ final class IpAddressValidator extends StringValidator {
                                 "ADDR_PART_NEGATIVE", part)); //NOI18N
                         return;
                     }
-                    if (addr > 256) {
+                    if (addr > 255) {
                         problems.add(NbBundle.getMessage(IpAddressValidator.class,
                                 "ADDR_PART_HIGH", part)); //NOI18N
                         return;

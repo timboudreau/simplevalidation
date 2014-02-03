@@ -40,9 +40,10 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.netbeans.validation.api.Problems;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -55,8 +56,12 @@ public class IpAddressValidatorTest {
     public void testValidate() {
         assertValid ("192.168.2.1");
         assertValid ("192.168.2.1:2080");
+        assertValid ("0.0.0.0");
+        assertValid ("255.255.255.255");
 
         assertInvalid ("192.168.2.1:2080303");
+        assertInvalid ("1.1.1.256");
+        assertInvalid ("1.1.1.256:10");
         assertInvalid ("1.2");
         assertInvalid ("192.168.2.1:");
         assertInvalid ("192.168.2.1.");
