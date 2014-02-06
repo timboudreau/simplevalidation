@@ -58,7 +58,9 @@ public final class Problems implements Iterable<Problem> {
      * Convenience method to add a problem with the specified message and
      * Severity.FATAL
      * @param problem
+     * @deprecated use append() instead
      */
+    @Deprecated
     public final void add (String problem) {
         add (problem, Severity.FATAL);
     }
@@ -67,7 +69,9 @@ public final class Problems implements Iterable<Problem> {
      * Add a problem with the specified severity
      * @param problem the message
      * @param severity the severity
+     * @deprecated use append() instead
      */
+    @Deprecated
     public final void add (String problem, Severity severity) {
         problems.add (new Problem (problem, severity));
         hasFatal |= severity == Severity.FATAL;
@@ -76,17 +80,69 @@ public final class Problems implements Iterable<Problem> {
     /**
      * Add a problem
      * @param problem The problem (may be null)
+     * @deprecated use append() instead
      */
+    @Deprecated
     public final void add (Problem problem) {
         if( problem == null ) { return; }
         problems.add (problem);
         hasFatal |= (problem.severity() == Severity.FATAL);
     }
+    /**
+     * Convenience method to add a problem with the specified message and
+     * Severity.FATAL
+     * @param problem
+     * @return this
+     * @since 1.6
+     */
+    @SuppressWarnings( "deprecation" )
+    public final Problems append(String problem) {
+        add(problem);
+        return this;
+    }
+    /**
+     * Add a problem with the specified severity
+     * @param problem the message
+     * @param severity the severity
+     * @return this
+     * @since 1.6
+     */
+    @SuppressWarnings( "deprecation" )
+    public final Problems append(String problem, Severity severity) {
+        add(problem);
+        return this;
+    }
+    /**
+     * Add a problem
+     * @param problem The problem (may be null)
+     * @deprecated use append() instead
+     * @return this
+     * @since 1.6
+     */
+    @SuppressWarnings( "deprecation" )
+    public final Problems append(Problem problem) {
+        add(problem);
+        return this;
+    }
+
+    /**
+     * Merge a set of problems into this one
+     * @param problems Problems with validation
+     * @return this
+     * @since 1.6
+     */
+    @SuppressWarnings( "deprecation" )
+    public final Problems addAll(Problems problems) {
+        putAll(problems);
+        return this;
+    }
 
     /**
      * Dump all problems in another instance of Problems into this one.
      * @param problems The other problems.
+     * @deprecated Use addAll instead
      */
+    @Deprecated
     public final void putAll (Problems problems) {
         if (problems == this) throw new IllegalArgumentException (
                 "putAll to self"); //NOI18N
@@ -143,7 +199,7 @@ public final class Problems implements Iterable<Problem> {
         // Note that Collections.sort() is *stable*, a fact we use to guarantee
         // this: of problems with equal severity, the problems added first will
         // remain before the later ones, and will thusly be considered "more leading".
-        // (This may be helpful if the problems added first 
+        // (This may be helpful if the problems added first
         // have *occured* more *recently* and thusly can be regarded as leading
         //  -- more natural to indicate to a user).
         Collections.sort (problems);
@@ -174,19 +230,19 @@ public final class Problems implements Iterable<Problem> {
         }
         return sb.toString();
     }
-    
+
     public void throwIfFatalPresent(String msg) {
         if (hasFatal()) {
             throw new InvalidInputException(msg, this);
         }
     }
-    
-    
+
+
     public void throwIfFatalPresent() {
         if (hasFatal()) {
             throw new InvalidInputException(this);
         }
-    }    
+    }
 
     @Override
     public Iterator<Problem> iterator() {
