@@ -6,7 +6,7 @@
     <artifactId>simplevalidation-parent</artifactId>
     <packaging>pom</packaging>
     <name>Simple Validation (parent)</name>
-    <version>1.6</version>
+    <version>1.7</version>
     <description>
         Simple Validation Parent Project:
         This is a simple library for quickly adding validation code to Swing user-interfaces.
