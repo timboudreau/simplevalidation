@@ -109,7 +109,7 @@ public final class Problems implements Iterable<Problem> {
      */
     @SuppressWarnings( "deprecation" )
     public final Problems append(String problem, Severity severity) {
-        add(problem);
+        add(problem, severity);
         return this;
     }
     /**
