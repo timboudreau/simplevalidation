@@ -98,7 +98,7 @@ public class EmailAddressValidatorTest {
         assertFalse (doValidate("фу@бар.com") == null);
         assertFalse (doValidate("Foo Bar <foo@bar.>") == null);
         assertFalse (doValidate("Foo Bar <foo@bar.com >") == null);
-        assertFalse (doValidate(" Foo Bar <foo@192.168.2.boo>") == null);
+        assertTrue (doValidate(" Foo Bar <foo@192.168.2.boo>") == null);
         assertFalse (doValidate("foo@bar.com ") == null);
         assertFalse (doValidate("Foo Bar <foo@bar.com:>") == null);
     }

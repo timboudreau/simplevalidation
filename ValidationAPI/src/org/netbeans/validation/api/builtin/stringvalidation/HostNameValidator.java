@@ -45,7 +45,7 @@ import org.netbeans.validation.api.Problems;
 import org.openide.util.NbBundle;
 
 /**
- *
+ * 
  * @author Tim Boudreau
  */
 final class HostNameValidator extends StringValidator {
@@ -64,13 +64,13 @@ final class HostNameValidator extends StringValidator {
             return;
         }
         if (model.startsWith(".") || model.endsWith(".")) { //NOI18N
-            problems.add(NbBundle.getMessage(IpAddressValidator.class,
+            problems.add(NbBundle.getMessage(HostNameValidator.class,
                 "HOST_STARTS_OR_ENDS_WITH_PERIOD", model)); //NOI18N
             return;
         }
         String[] parts = model.split("\\.");
         if (parts.length > 4) {
-            problems.add(NbBundle.getMessage(IpAddressValidator.class,
+            problems.add(NbBundle.getMessage(HostNameValidator.class,
                 "TOO_MANY_LABELS", model)); //NOI18N
             return;
         }
@@ -79,7 +79,7 @@ final class HostNameValidator extends StringValidator {
                     "MSG_PORT_NOT_ALLOWED", compName, model)); //NOI18N
             return;
         }
-        new MayNotContainSpacesValidator().validate(problems, compName, model);
+        StringValidators.NO_WHITESPACE.validate(problems, compName, model);
         if (model.endsWith("-") || model.startsWith("-")) {
             problems.add(NbBundle.getMessage(HostNameValidator.class,
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
@@ -113,11 +113,11 @@ final class HostNameValidator extends StringValidator {
                 try {
                     int port = Integer.parseInt(labelAndPort[1]);
                     if (port < 0) {
-                        problems.add(NbBundle.getMessage(IpAddressValidator.class,
+                        problems.add(NbBundle.getMessage(HostNameValidator.class,
                                 "NEGATIVE_PORT", port)); //NOI18N
                         return;
                     } else if (port >= 65536) {
-                        problems.add(NbBundle.getMessage(IpAddressValidator.class,
+                        problems.add(NbBundle.getMessage(HostNameValidator.class,
                                 "PORT_TOO_HIGH", port)); //NOI18N
                         return;
                     }
@@ -155,7 +155,7 @@ final class HostNameValidator extends StringValidator {
             numbers[index] = true;
         }
         Problems tmp = new Problems();
-        new EncodableInCharsetValidator("UTF-8").validate(tmp, compName, label);
+        StringValidators.encodableInCharset("UTF-8").validate(tmp, compName, label);
         problems.putAll(tmp);
         if (!tmp.hasFatal()) {
             for (char c : label.toLowerCase().toCharArray()) {

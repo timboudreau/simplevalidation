@@ -40,17 +40,18 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
+import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
- *
+ * 
  * @author Tim Boudreau
  */
 final class ValidHostNameOrIPValidator extends StringValidator {
     private final HostNameValidator hostVal;
-    private final IpAddressValidator ipVal = new IpAddressValidator();
+    private final Validator<String> ipVal = StringValidators.IP_ADDRESS;
     ValidHostNameOrIPValidator(boolean allowPort) {
         hostVal = new HostNameValidator(allowPort);
     }
@@ -59,6 +60,7 @@ final class ValidHostNameOrIPValidator extends StringValidator {
         this(true);
     }
 
+    private static final Pattern NUMBERS = Pattern.compile("^\\d+$");
     @Override
     public void validate(Problems problems, String compName, String model) {
         String[] parts = model.split ("\\.");
@@ -99,17 +101,9 @@ final class ValidHostNameOrIPValidator extends StringValidator {
                     }
                 }
             }
-            try {
-                Integer.parseInt (s);
-                hasIntParts = true;
-            } catch (NumberFormatException nfe) {
-                hasNonIntParts = true;
-            }
-            if (hasIntParts && hasNonIntParts) {
-                problems.add(NbBundle.getMessage (ValidHostNameOrIPValidator.class,
-                        "ADDRESS_CONTAINS_INT_AND_NON_INT_LABELS", compName, model)); //NOI18N
-                return;
-            }
+            boolean num = NUMBERS.matcher(s).find();
+            hasIntParts |= num;
+            hasNonIntParts |= !num;
         }
         if(hasNonIntParts){
             hostVal.validate(problems, compName, model);
@@ -118,5 +112,4 @@ final class ValidHostNameOrIPValidator extends StringValidator {
             ipVal.validate(problems, compName, model);
         }
     }
-
 }

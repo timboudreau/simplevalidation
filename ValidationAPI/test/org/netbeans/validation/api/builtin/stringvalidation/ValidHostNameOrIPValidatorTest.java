@@ -86,7 +86,7 @@ public class ValidHostNameOrIPValidatorTest {
         assertValid (v, "java.sun.com:8100");
         assertNotValid (v, "");
         assertNotValid (v, "java.100.com:boo");
-        assertNotValid (v, "java.100.com:8100");
+        assertValid (v, "java.100.com:8100");
         assertNotValid (v, ":8100");
         assertNotValid (v, ".com");
         assertNotValid (v, ".com:8100");
