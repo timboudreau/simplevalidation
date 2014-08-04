@@ -88,7 +88,6 @@ public class HostNameValidatorTest {
         v = new HostNameValidator(false);
         assertTrue(check(v,  "myhost.com:204").isFatal());
         assertTrue(check(v,  "myhost.com:204-").isFatal());
-        assertTrue(check(v,  "205.foo.com").isFatal()); 
 
         v = new HostNameValidator(true);
         assertTrue(check(v,  "128.foo.129").isFatal());

@@ -40,8 +40,8 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
+import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
@@ -85,7 +85,7 @@ final class HostNameValidator extends StringValidator {
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
             return;
         }
-
+        boolean[] numbers = new boolean[parts.length];
         for (int i = 0; i < parts.length; i++) {
             String label = parts[i];
             if (label.length() > 63) {
@@ -126,16 +126,21 @@ final class HostNameValidator extends StringValidator {
                             "INVALID_PORT", compName, labelAndPort[1])); //NOI18N
                     return;
                 }
-                if(!checkHostPart(labelAndPort[0], problems, compName)){
+                if(!checkHostPart(labelAndPort[0], problems, compName, i, numbers)){
                     return;
                 }
             } else {
-                checkHostPart(label, problems, compName);
+                checkHostPart(label, problems, compName, i, numbers);
             }
         } // for
+        if (numbers[numbers.length - 1]) {
+                problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    "NUMBER_PART_IN_HOSTNAME", parts[numbers.length - 1])); //NOI18N
+        }
     }
 
-    private boolean checkHostPart(String label, Problems problems, String compName) {
+    private static final Pattern ALL_NUMBERS = Pattern.compile("^\\d+$");
+    private boolean checkHostPart(String label, Problems problems, String compName, int index, boolean[] numbers) {
         if (label.length() > 63) {
             problems.add(NbBundle.getMessage(HostNameValidator.class,
                     "LABEL_TOO_LONG", label)); //NOI18N
@@ -146,16 +151,11 @@ final class HostNameValidator extends StringValidator {
                     "LABEL_EMPTY", compName, label)); //NOI18N
             return false;
         }
-        try {
-            Integer.parseInt(label);
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
-                    "NUMBER_PART_IN_HOSTNAME", label)); //NOI18N
-            return false;
-        } catch (NumberFormatException e) {
-            //do nothing
+        if (ALL_NUMBERS.matcher(label).matches()) {
+            numbers[index] = true;
         }
         Problems tmp = new Problems();
-        new EncodableInCharsetValidator().validate(tmp, compName, label);
+        new EncodableInCharsetValidator("UTF-8").validate(tmp, compName, label);
         problems.putAll(tmp);
         if (!tmp.hasFatal()) {
             for (char c : label.toLowerCase().toCharArray()) {

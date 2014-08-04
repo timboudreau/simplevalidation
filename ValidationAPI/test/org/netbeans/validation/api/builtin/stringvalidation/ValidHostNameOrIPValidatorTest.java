@@ -74,7 +74,7 @@ public class ValidHostNameOrIPValidatorTest {
         assertValid (v, "sun.com");
         assertValid (v, "netbeans.org");
         assertValid (v, "netbeans.org:2203");
-        assertNotValid (v, "netbeans.192.org");
+        assertNotValid (v, "netbeans.192.1");
         assertNotValid (v, "netbeans.org.192:239");
         assertNotValid (v, "");
 
