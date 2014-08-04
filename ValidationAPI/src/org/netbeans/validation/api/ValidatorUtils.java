@@ -168,6 +168,38 @@ public class ValidatorUtils {
     }
 
     /**
+     * Returns a validator which wraps the passed validator, but treats null
+     * values as legal.
+     * 
+     * @param <T> The type of the other validator
+     * @param other The other validator
+     * @return The validator
+     */
+    public static <T> Validator<T> allowNull(Validator<T> other) {
+        if (other instanceof AllowNullValidator) {
+            return other;
+        }
+        return new AllowNullValidator<T>(other);
+    }
+
+    private static final class AllowNullValidator<T> extends AbstractValidator<T> {
+        private final Validator<T> other;
+
+        AllowNullValidator ( Validator<T> other ) {
+            super( other.modelType() );
+            this.other = other;
+        }
+
+        @Override
+        public void validate ( Problems prblms, String string, T model ) {
+            if (model == null) {
+                return;
+            }
+            other.validate( prblms, string, model );
+        }
+    }
+
+    /**
      * Will do the following:
      * <ul>
      * <li>Check if <code>t</code> is equal to or assignable to this Validator's
