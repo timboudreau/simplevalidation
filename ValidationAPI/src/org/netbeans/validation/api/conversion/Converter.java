@@ -2,6 +2,7 @@
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2014 Tim Boudreau, All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common
@@ -107,13 +108,6 @@ public abstract class Converter<From,To> {
      */
     public static void register (Converter<?,?> converter) {
         registry.add (converter);
-    }
-
-    static {
-        Converter.register (new StringToDocumentConverter());
-        Converter.register (new StringToComboBoxModelConverter());
-        Converter.register (new SelectedIndicesToListSelectionModelConverter());
-        Converter.register (new SelectedIndicesToButtonModelArrayConverter());
     }
 
     /**

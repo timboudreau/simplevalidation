@@ -38,7 +38,7 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-package org.netbeans.validation.api.conversion;
+package org.netbeans.validation.api.conversion.swing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +46,18 @@ import javax.swing.ListSelectionModel;
 import org.netbeans.validation.api.AbstractValidator;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
+import org.netbeans.validation.api.conversion.Converter;
+import org.netbeans.validation.api.conversion.Converter;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Hugo Heden
  */
-class SelectedIndicesToListSelectionModelConverter extends Converter <Integer[], ListSelectionModel> {
+@ServiceProvider(service=Converter.class)
+public class SelectedIndicesToListSelectionModelConverter extends Converter <Integer[], ListSelectionModel> {
 
-    SelectedIndicesToListSelectionModelConverter() {
+    public SelectedIndicesToListSelectionModelConverter() {
         super (Integer[].class, ListSelectionModel.class);
     }
 

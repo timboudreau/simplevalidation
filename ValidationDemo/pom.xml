@@ -4,7 +4,7 @@
     <parent>
         <artifactId>simplevalidation-parent</artifactId>
         <groupId>com.kenai</groupId>
-        <version>1.8</version>
+        <version>1.9</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>simplevalidation-demo</artifactId>
@@ -25,5 +25,10 @@
             <artifactId>simplevalidation</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>simplevalidation-swing</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
     </dependencies>
 </project>

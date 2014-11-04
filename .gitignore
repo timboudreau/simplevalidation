@@ -1,0 +1,21 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.orig
+*.iml
+.idea/*
+target/*
+
+/nbstubs/target/
+/BasicDemo/target/
+/ValidationDemo/target/
+/BunchDemo/target/
+/standalone/target/
+/ValidationAPI/target/
+/simplevalidation-swing/target/
+/standalone-server/target/
+/simplevalidation-standalone-server/target/
+

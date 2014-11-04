@@ -38,49 +38,54 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-package org.netbeans.validation.api.conversion;
+package org.netbeans.validation.api.conversion.swing;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.ButtonModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import org.netbeans.validation.api.AbstractValidator;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
+import org.netbeans.validation.api.conversion.Converter;
+import org.netbeans.validation.api.conversion.Converter;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author Hugo Heden
+ * @author Tim Boudreau
  */
-class SelectedIndicesToButtonModelArrayConverter extends Converter <Integer[], ButtonModel[]> {
+@ServiceProvider(service=Converter.class)
+public final class StringToDocumentConverter extends Converter <String, Document> {
 
-    SelectedIndicesToButtonModelArrayConverter() {
-        super (Integer[].class, ButtonModel[].class);
+    public StringToDocumentConverter() {
+        super (String.class, Document.class);
     }
 
     @Override
-    public Validator<ButtonModel[]> convert(Validator<Integer[]> from) {
-        return new V(from);
+    public Validator<Document> convert(Validator<String> from) {
+        return new DocValidator (from);
     }
 
-    private static final class V extends AbstractValidator<ButtonModel[]> {
-        private final Validator<Integer[]> wrapped;
+    private static class DocValidator extends AbstractValidator<Document> {
+        private Validator<String> wrapped;
 
-        public V(Validator<Integer[]> wrapped) {
-            super (ButtonModel[].class);
-            this.wrapped = wrapped;
+        private DocValidator(Validator<String> from) {
+            super (Document.class);
+            this.wrapped = from;
         }
 
         @Override
-        public void validate(Problems problems, String compName, ButtonModel[] buttonModels) {
-            List<Integer> selectedElements = new ArrayList<Integer>(buttonModels.length);
-            int index = 0;
-            for( ButtonModel m : buttonModels ){
-                if(m.isSelected()){
-                    selectedElements.add(index);
-                }
-                ++index;
+        public void validate(Problems problems, String compName, Document model) {
+            try {
+                String text = model.getText(0, model.getLength());
+                wrapped.validate(problems, compName, text);
+            } catch (BadLocationException ex) {
+                throw new IllegalStateException (ex);
             }
-            wrapped.validate(problems, compName, selectedElements.toArray(new Integer[selectedElements.size()]));
+        }
+
+        @Override
+        public String toString() {
+            return "DocValidator for [" + wrapped + "]";
         }
     }
 }

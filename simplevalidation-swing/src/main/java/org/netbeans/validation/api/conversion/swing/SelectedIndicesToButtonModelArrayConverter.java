@@ -38,41 +38,53 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-package org.netbeans.validation.api.conversion;
+package org.netbeans.validation.api.conversion.swing;
 
-import javax.swing.ComboBoxModel;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.ButtonModel;
 import org.netbeans.validation.api.AbstractValidator;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
+import org.netbeans.validation.api.conversion.Converter;
+import org.netbeans.validation.api.conversion.Converter;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author Tim Boudreau
+ * @author Hugo Heden
  */
-class StringToComboBoxModelConverter extends Converter <String, ComboBoxModel> {
+@ServiceProvider(service=Converter.class)
+public class SelectedIndicesToButtonModelArrayConverter extends Converter <Integer[], ButtonModel[]> {
 
-    StringToComboBoxModelConverter() {
-        super (String.class, ComboBoxModel.class);
+    public SelectedIndicesToButtonModelArrayConverter() {
+        super (Integer[].class, ButtonModel[].class);
     }
 
     @Override
-    public Validator<ComboBoxModel> convert(Validator<String> from) {
+    public Validator<ButtonModel[]> convert(Validator<Integer[]> from) {
         return new V(from);
     }
 
-    private static final class V extends AbstractValidator<ComboBoxModel> {
-        private final Validator<String> wrapped;
+    private static final class V extends AbstractValidator<ButtonModel[]> {
+        private final Validator<Integer[]> wrapped;
 
-        public V(Validator<String> wrapped) {
-            super (ComboBoxModel.class);
+        public V(Validator<Integer[]> wrapped) {
+            super (ButtonModel[].class);
             this.wrapped = wrapped;
         }
 
         @Override
-        public void validate(Problems problems, String compName, ComboBoxModel model) {
-            Object o = model.getSelectedItem();
-            String s = o == null ? "" : o.toString();
-            wrapped.validate(problems, compName, s);
+        public void validate(Problems problems, String compName, ButtonModel[] buttonModels) {
+            List<Integer> selectedElements = new ArrayList<Integer>(buttonModels.length);
+            int index = 0;
+            for( ButtonModel m : buttonModels ){
+                if(m.isSelected()){
+                    selectedElements.add(index);
+                }
+                ++index;
+            }
+            wrapped.validate(problems, compName, selectedElements.toArray(new Integer[selectedElements.size()]));
         }
     }
 }

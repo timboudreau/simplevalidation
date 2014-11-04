@@ -38,50 +38,45 @@
  * Version 2 license, then the option applies only if the new code is
  * made subject to such option by the copyright holder.
  */
-package org.netbeans.validation.api.conversion;
+package org.netbeans.validation.api.conversion.swing;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import javax.swing.ComboBoxModel;
 import org.netbeans.validation.api.AbstractValidator;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
+import org.netbeans.validation.api.conversion.Converter;
+import org.netbeans.validation.api.conversion.Converter;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
  * @author Tim Boudreau
  */
-final class StringToDocumentConverter extends Converter <String, Document> {
+@ServiceProvider(service=Converter.class)
+public class StringToComboBoxModelConverter extends Converter <String, ComboBoxModel> {
 
-    StringToDocumentConverter() {
-        super (String.class, Document.class);
+    public StringToComboBoxModelConverter() {
+        super (String.class, ComboBoxModel.class);
     }
 
     @Override
-    public Validator<Document> convert(Validator<String> from) {
-        return new DocValidator (from);
+    public Validator<ComboBoxModel> convert(Validator<String> from) {
+        return new V(from);
     }
 
-    private static class DocValidator extends AbstractValidator<Document> {
-        private Validator<String> wrapped;
+    private static final class V extends AbstractValidator<ComboBoxModel> {
+        private final Validator<String> wrapped;
 
-        private DocValidator(Validator<String> from) {
-            super (Document.class);
-            this.wrapped = from;
+        public V(Validator<String> wrapped) {
+            super (ComboBoxModel.class);
+            this.wrapped = wrapped;
         }
 
         @Override
-        public void validate(Problems problems, String compName, Document model) {
-            try {
-                String text = model.getText(0, model.getLength());
-                wrapped.validate(problems, compName, text);
-            } catch (BadLocationException ex) {
-                throw new IllegalStateException (ex);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return "DocValidator for [" + wrapped + "]";
+        public void validate(Problems problems, String compName, ComboBoxModel model) {
+            Object o = model.getSelectedItem();
+            String s = o == null ? "" : o.toString();
+            wrapped.validate(problems, compName, s);
         }
     }
 }

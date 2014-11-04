@@ -7,8 +7,8 @@
         <version>1.9</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>simplevalidation-standalone</artifactId>
-    <name>Simplevalidation Standalone</name>
+    <artifactId>simplevalidation-standalone-server</artifactId>
+    <name>Simplevalidation Standalone (no swing)</name>
     <description>Build which includes nbstubs for use in standalone
         swing applications</description>
     <dependencies>
@@ -23,17 +23,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>simplevalidation-swing</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>org-openide-util</artifactId>
-                    <groupId>org.netbeans.api</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>nbstubs</artifactId>
@@ -75,7 +64,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>simplevalidation-standalone-${project.version}</finalName>
+                            <finalName>simplevalidation-standalone-server-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
