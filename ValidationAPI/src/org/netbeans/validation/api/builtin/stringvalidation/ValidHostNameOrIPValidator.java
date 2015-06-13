@@ -63,6 +63,10 @@ final class ValidHostNameOrIPValidator extends StringValidator {
     private static final Pattern NUMBERS = Pattern.compile("^\\d+$");
     @Override
     public void validate(Problems problems, String compName, String model) {
+        if (HostNameValidator.isIpV6(model)) {
+            new HostNameValidator(true).validate(problems, compName, model);
+            return;
+        }
         String[] parts = model.split ("\\.");
         boolean hasIntParts = false;
         boolean hasNonIntParts = false;

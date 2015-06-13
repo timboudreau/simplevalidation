@@ -59,6 +59,9 @@ public class HostNameValidatorTest {
         assertNull(check(v, "2001:db8:85a3::8a2e:370:7334"));
         v = new HostNameValidator(true);
         assertNull(check(v, "[2001:db8:85a3::8a2e:370:7334]:8080"));
+        
+        assertNull(check(StringValidators.HOST_NAME_OR_IP_ADDRESS, "2001:db8:1f70::999:de8:7648:6e8"));
+        assertNull(check(StringValidators.HOST_NAME_OR_IP_ADDRESS, "2001:db8:85a3::8a2e:370:7334"));
     }
 
     private Problem check(Validator<String> v, String str){
