@@ -40,8 +40,6 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.netbeans.validation.api.Problem;
 import org.netbeans.validation.api.Problems;
@@ -53,18 +51,15 @@ import static org.junit.Assert.*;
  * @author Tim Boudreau
  */
 public class HostNameValidatorTest {
-
-    public HostNameValidatorTest() {
+    
+    @Test
+    public void testIpV6() {
+        Validator<String> v = new HostNameValidator(false);
+        assertNull(check(v, "2001:db8:1f70::999:de8:7648:6e8"));
+        assertNull(check(v, "2001:db8:85a3::8a2e:370:7334"));
+        v = new HostNameValidator(true);
+        assertNull(check(v, "[2001:db8:85a3::8a2e:370:7334]:8080"));
     }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
 
     private Problem check(Validator<String> v, String str){
         Problems p = new Problems();

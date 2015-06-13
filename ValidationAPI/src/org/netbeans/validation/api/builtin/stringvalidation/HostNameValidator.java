@@ -40,48 +40,86 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
 import org.openide.util.NbBundle;
 
 /**
- * 
+ *
  * @author Tim Boudreau
  */
 final class HostNameValidator extends StringValidator {
 
+    private static final Pattern IPV6_REGEX = Pattern.compile("(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
+    private static final Pattern IPV6_REGEX_WITH_PORT = Pattern.compile("^\\[(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\\]:\\d+");
+    private static final Pattern IP_V6_HOST_AND_PORT = Pattern.compile("^\\[(.*)\\]\\:(\\d+)$");
     private final boolean allowPort;
 
     HostNameValidator(boolean allowPort) {
         this.allowPort = allowPort;
     }
 
+    private void validateIpV6(Problems problems, String compName, String model) {
+        //hmm, anything the regex won't check?
+    }
+
     @Override
     public void validate(Problems problems, String compName, String model) {
+        if (model == null) {
+            return;
+        }
+        if (IPV6_REGEX.matcher(model).matches()) {
+            validateIpV6(problems, compName, model);
+            return;
+        } else if (allowPort && !model.isEmpty() && (model.charAt(0) == '[' && IPV6_REGEX_WITH_PORT.matcher(model).matches())) {
+            Matcher m = IP_V6_HOST_AND_PORT.matcher(model);
+            if (m.find()) {
+                String actualHost = m.group(1);
+                String actualPort = m.group(2);
+                validateIpV6(problems, compName, actualHost);
+                try {
+                    int port = Integer.parseInt(actualPort);
+                    if (port < 0) {
+                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                                "NEGATIVE_PORT", port)); //NOI18N
+                        return;
+                    } else if (port >= 65536) {
+                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                                "PORT_TOO_HIGH", port)); //NOI18N
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                            "INVALID_PORT", compName, actualPort)); //NOI18N
+                }
+                return;
+            }
+        }
         if (model.length() == 0) {
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
             return;
         }
         if (model.startsWith(".") || model.endsWith(".")) { //NOI18N
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
-                "HOST_STARTS_OR_ENDS_WITH_PERIOD", model)); //NOI18N
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    "HOST_STARTS_OR_ENDS_WITH_PERIOD", model)); //NOI18N
             return;
         }
         String[] parts = model.split("\\.");
         if (parts.length > 4) {
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
-                "TOO_MANY_LABELS", model)); //NOI18N
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    "TOO_MANY_LABELS", model)); //NOI18N
             return;
         }
         if (!allowPort && model.contains(":")) { //NOI18N
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "MSG_PORT_NOT_ALLOWED", compName, model)); //NOI18N
             return;
         }
         StringValidators.NO_WHITESPACE.validate(problems, compName, model);
         if (model.endsWith("-") || model.startsWith("-")) {
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
             return;
         }
@@ -89,44 +127,44 @@ final class HostNameValidator extends StringValidator {
         for (int i = 0; i < parts.length; i++) {
             String label = parts[i];
             if (label.length() > 63) {
-                problems.add(NbBundle.getMessage(HostNameValidator.class,
+                problems.append(NbBundle.getMessage(HostNameValidator.class,
                         "LABEL_TOO_LONG", label)); //NOI18N
                 return;
             }
             if (i == parts.length - 1 && label.indexOf(":") > 0) {
                 String[] labelAndPort = label.split(":");
                 if (labelAndPort.length > 2) {
-                    problems.add(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(NbBundle.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, label)); //NOI18N
                     return;
                 }
                 if (labelAndPort.length == 1) {
-                    problems.add(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(NbBundle.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, "''")); //NOI18N
                     return;
-                } 
+                }
                 if (label.endsWith(":")) {
-                    problems.add(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(NbBundle.getMessage(HostNameValidator.class,
                             "TOO_MANY_COLONS", compName, label)); //NOI18N
                     return;
                 }
                 try {
                     int port = Integer.parseInt(labelAndPort[1]);
                     if (port < 0) {
-                        problems.add(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(NbBundle.getMessage(HostNameValidator.class,
                                 "NEGATIVE_PORT", port)); //NOI18N
                         return;
                     } else if (port >= 65536) {
-                        problems.add(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(NbBundle.getMessage(HostNameValidator.class,
                                 "PORT_TOO_HIGH", port)); //NOI18N
                         return;
                     }
                 } catch (NumberFormatException e) {
-                    problems.add(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(NbBundle.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, labelAndPort[1])); //NOI18N
                     return;
                 }
-                if(!checkHostPart(labelAndPort[0], problems, compName, i, numbers)){
+                if (!checkHostPart(labelAndPort[0], problems, compName, i, numbers)) {
                     return;
                 }
             } else {
@@ -134,20 +172,21 @@ final class HostNameValidator extends StringValidator {
             }
         } // for
         if (numbers[numbers.length - 1]) {
-                problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "NUMBER_PART_IN_HOSTNAME", parts[numbers.length - 1])); //NOI18N
         }
     }
 
     private static final Pattern ALL_NUMBERS = Pattern.compile("^\\d+$");
+
     private boolean checkHostPart(String label, Problems problems, String compName, int index, boolean[] numbers) {
         if (label.length() > 63) {
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "LABEL_TOO_LONG", label)); //NOI18N
             return false;
         }
         if (label.length() == 0) {
-            problems.add(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(NbBundle.getMessage(HostNameValidator.class,
                     "LABEL_EMPTY", compName, label)); //NOI18N
             return false;
         }
@@ -162,7 +201,7 @@ final class HostNameValidator extends StringValidator {
                 if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9' || c == '-')) { //NOI18N
                     continue;
                 }
-                problems.add(NbBundle.getMessage(HostNameValidator.class,
+                problems.append(NbBundle.getMessage(HostNameValidator.class,
                         "BAD_CHAR_IN_HOSTNAME", new String(new char[]{c}))); //NOI18N
                 return false;
             }
