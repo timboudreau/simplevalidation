@@ -41,7 +41,6 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 import org.openide.util.Utilities;
 
@@ -50,8 +49,6 @@ import org.openide.util.Utilities;
  * @author Tim Boudreau
  */
 final class NotJavaIdentifierValidator extends StringValidator {
-    public NotJavaIdentifierValidator() {
-    }
 
     @Override
     public void validate(Problems problems, String compName, String text) {
