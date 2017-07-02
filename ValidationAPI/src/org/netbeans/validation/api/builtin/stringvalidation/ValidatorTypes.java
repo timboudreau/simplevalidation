@@ -13,5 +13,5 @@ public class ValidatorTypes {
     public static Class<? extends Validator> IP_ADDRESS = IpAddressValidator.class;
     public static Class<? extends Validator> HOST_NAME_OR_IP_ADDRESS = IpAddressValidator.class;
     public static Class<? extends Validator> NO_WHITESPACE = MayNotContainSpacesValidator.class;
-    
+    public static Class<? extends Validator> URL = UrlValidator.class;
 }

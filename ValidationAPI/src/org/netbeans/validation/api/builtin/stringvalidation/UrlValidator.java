@@ -43,7 +43,6 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 import org.openide.util.NbBundle;
 
 /**
@@ -70,7 +69,6 @@ class UrlValidator extends StringValidator {
                 emailAddress = emailAddress == null ? "" : emailAddress;
                 new EmailAddressValidator().validate(problems, compName,
                         emailAddress);
-                return;
             }
         } catch (MalformedURLException e) {
             String problem = NbBundle.getMessage(UrlValidator.class,

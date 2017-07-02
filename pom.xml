@@ -5,7 +5,7 @@
     <artifactId>simplevalidation-parent</artifactId>
     <packaging>pom</packaging>
     <name>Simple Validation (parent)</name>
-    <version>1.10</version>
+    <version>1.11</version>
     <description>
         Simple Validation Parent Project:
         This is a simple library for quickly adding validation code to Swing user-interfaces.
@@ -97,7 +97,7 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-openide-util</artifactId>
-                <version>RELEASE68</version>
+                <version>RELEASE81</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
