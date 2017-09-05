@@ -22,6 +22,9 @@
         <resources>
             <resource>
                 <directory>src</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
             </resource>
         </resources>
         <plugins>
@@ -43,6 +46,9 @@
                                     <includes>
                                         <include>**/duckLogo.png</include>
                                     </includes>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>                                    
                                 </resource>
                             </resources>
                         </configuration>
