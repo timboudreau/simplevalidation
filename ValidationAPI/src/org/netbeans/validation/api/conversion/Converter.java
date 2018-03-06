@@ -41,12 +41,12 @@
  */
 package org.netbeans.validation.api.conversion;
 
-import java.util.Collection;
 import org.netbeans.validation.api.*;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.Set;
 import org.netbeans.validation.api.ValidatorUtils;
-import org.openide.util.Lookup;
 
 /**
  * Converts validators. Can convert a {@link Validator} working on one type (such as {@code String})
@@ -123,8 +123,9 @@ public abstract class Converter<From,To> {
      * and produce validators for type <code>To</code>
      */
     public static<From, To> Converter<From, To> find (Class<From> from, Class<To> to) {
-        Collection<? extends Converter> converters = Lookup.getDefault().lookupAll(Converter.class);
-        for (Converter<?,?> c : converters) {
+        Iterator<Converter> converters = ServiceLoader.load(Converter.class).iterator();
+        while(converters.hasNext()) {
+            Converter<?,?> c = converters.next();
             if (c.match(from,to)) {
                 return c.as(from, to);
             }

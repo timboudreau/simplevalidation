@@ -41,12 +41,10 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Locale;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 /**
  *
  * @author Tim Boudreau
@@ -74,7 +72,7 @@ final class IsANumberValidator extends StringValidator {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException e) {
-                problems.add(NbBundle.getMessage(IsANumberValidator.class, "NOT_A_NUMBER", model, compName)); //NOI18N
+                problems.add(LocalizationSupport.getMessage(IsANumberValidator.class, "NOT_A_NUMBER", model, compName)); //NOI18N
             }
         }
     }

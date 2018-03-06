@@ -43,7 +43,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -85,45 +85,45 @@ final class HostNameValidator extends StringValidator {
                 try {
                     int port = Integer.parseInt(actualPort);
                     if (port < 0) {
-                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                                 "NEGATIVE_PORT", port)); //NOI18N
                         return;
                     } else if (port >= 65536) {
-                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                                 "PORT_TOO_HIGH", port)); //NOI18N
                         return;
                     }
                 } catch (NumberFormatException e) {
-                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, actualPort)); //NOI18N
                 }
                 return;
             }
         }
         if (model.length() == 0) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
             return;
         }
         if (model.startsWith(".") || model.endsWith(".")) { //NOI18N
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "HOST_STARTS_OR_ENDS_WITH_PERIOD", model)); //NOI18N
             return;
         }
         String[] parts = model.split("\\.");
         if (parts.length > 4) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "TOO_MANY_LABELS", model)); //NOI18N
             return;
         }
         if (!allowPort && model.contains(":")) { //NOI18N
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "MSG_PORT_NOT_ALLOWED", compName, model)); //NOI18N
             return;
         }
         StringValidators.NO_WHITESPACE.validate(problems, compName, model);
         if (model.endsWith("-") || model.startsWith("-")) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "INVALID_HOST_NAME", compName, model)); //NOI18N
             return;
         }
@@ -131,40 +131,40 @@ final class HostNameValidator extends StringValidator {
         for (int i = 0; i < parts.length; i++) {
             String label = parts[i];
             if (label.length() > 63) {
-                problems.append(NbBundle.getMessage(HostNameValidator.class,
+                problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                         "LABEL_TOO_LONG", label)); //NOI18N
                 return;
             }
             if (i == parts.length - 1 && label.indexOf(":") > 0) {
                 String[] labelAndPort = label.split(":");
                 if (labelAndPort.length > 2) {
-                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, label)); //NOI18N
                     return;
                 }
                 if (labelAndPort.length == 1) {
-                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, "''")); //NOI18N
                     return;
                 }
                 if (label.endsWith(":")) {
-                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                             "TOO_MANY_COLONS", compName, label)); //NOI18N
                     return;
                 }
                 try {
                     int port = Integer.parseInt(labelAndPort[1]);
                     if (port < 0) {
-                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                                 "NEGATIVE_PORT", port)); //NOI18N
                         return;
                     } else if (port >= 65536) {
-                        problems.append(NbBundle.getMessage(HostNameValidator.class,
+                        problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                                 "PORT_TOO_HIGH", port)); //NOI18N
                         return;
                     }
                 } catch (NumberFormatException e) {
-                    problems.append(NbBundle.getMessage(HostNameValidator.class,
+                    problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                             "INVALID_PORT", compName, labelAndPort[1])); //NOI18N
                     return;
                 }
@@ -176,7 +176,7 @@ final class HostNameValidator extends StringValidator {
             }
         } // for
         if (numbers[numbers.length - 1]) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "NUMBER_PART_IN_HOSTNAME", parts[numbers.length - 1])); //NOI18N
         }
     }
@@ -185,12 +185,12 @@ final class HostNameValidator extends StringValidator {
 
     private boolean checkHostPart(String label, Problems problems, String compName, int index, boolean[] numbers) {
         if (label.length() > 63) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "LABEL_TOO_LONG", label)); //NOI18N
             return false;
         }
         if (label.length() == 0) {
-            problems.append(NbBundle.getMessage(HostNameValidator.class,
+            problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "LABEL_EMPTY", compName, label)); //NOI18N
             return false;
         }
@@ -205,7 +205,7 @@ final class HostNameValidator extends StringValidator {
                 if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9' || c == '-')) { //NOI18N
                     continue;
                 }
-                problems.append(NbBundle.getMessage(HostNameValidator.class,
+                problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                         "BAD_CHAR_IN_HOSTNAME", new String(new char[]{c}))); //NOI18N
                 return false;
             }

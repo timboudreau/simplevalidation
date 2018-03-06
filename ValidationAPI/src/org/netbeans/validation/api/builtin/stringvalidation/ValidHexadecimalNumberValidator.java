@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -53,7 +52,7 @@ final class ValidHexadecimalNumberValidator extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model.length() % 2 != 0) {
-            problems.add(NbBundle.getMessage(ValidHexadecimalNumberValidator.class,
+            problems.add(LocalizationSupport.getMessage(ValidHexadecimalNumberValidator.class,
                     "ODD_LENGTH_HEX", compName)); //NOI18N
             return;
         }
@@ -61,7 +60,7 @@ final class ValidHexadecimalNumberValidator extends StringValidator {
             boolean good = (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f') ||
                     (c >= '0' && c <= '9');
             if (!good) {
-                problems.add (NbBundle.getMessage(ValidHexadecimalNumberValidator.class,
+                problems.add (LocalizationSupport.getMessage(ValidHexadecimalNumberValidator.class,
                         "INVALID_HEX", //NOI18N
                         new String(new char[] { c }), compName));
                 return;

@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 /**
  *
  * @author Tim Boudreau
@@ -51,7 +50,7 @@ final class EmptyStringIllegalValidator extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model.isEmpty()) {
-            String message = NbBundle.getMessage(EmptyStringIllegalValidator.class,
+            String message = LocalizationSupport.getMessage(EmptyStringIllegalValidator.class,
                 "MSG_MAY_NOT_BE_EMPTY", compName); //NOI18N
             problems.add (message);
         }

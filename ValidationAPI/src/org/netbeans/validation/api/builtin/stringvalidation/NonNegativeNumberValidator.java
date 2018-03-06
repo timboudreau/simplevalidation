@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -55,7 +54,7 @@ class NonNegativeNumberValidator extends StringValidator {
         try {
             double d = Double.parseDouble(text);
             if (d < 0D) {
-                String problem = NbBundle.getMessage(
+                String problem = LocalizationSupport.getMessage(
                         NonNegativeNumberValidator.class,
                         "ERR_NEGATIVE_NUMBER", compName); //NOI18N
                 problems.add (problem);

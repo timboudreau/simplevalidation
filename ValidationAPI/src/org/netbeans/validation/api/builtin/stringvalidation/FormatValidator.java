@@ -43,8 +43,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.text.Format;
 import java.text.ParseException;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -61,7 +60,7 @@ final class FormatValidator extends StringValidator {
         try {
             fmt.parseObject(model);
         } catch (ParseException ex) {
-            problems.add(NbBundle.getMessage(FormatValidator.class,
+            problems.add(LocalizationSupport.getMessage(FormatValidator.class,
                     "MSG_DOES_NOT_MATCH_NUMBER_FORMAT", compName, model)); //NOI18N
         }
     }

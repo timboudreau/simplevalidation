@@ -40,9 +40,9 @@
  */
 package org.netbeans.validation.api.builtin.stringvalidation;
 
+import java.util.Arrays;
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -55,9 +55,47 @@ final class NotJavaIdentifierValidator extends StringValidator {
         if (text.trim().length() == 0) {
             return;
         }
-        if (!Utilities.isJavaIdentifier(text)) {
-            problems.add(NbBundle.getMessage(NotJavaIdentifierValidator.class,
+        if (!isJavaIdentifier(text)) {
+            problems.add(LocalizationSupport.getMessage(NotJavaIdentifierValidator.class,
                 "ERR_JAVA_IDENTIFIER", text));
         }
     }
+
+    public static final boolean isJavaIdentifier(String id) {
+        if (id == null) {
+            return false;
+        }
+
+        if (id.equals("")) {
+            return false;
+        }
+
+        if (!(java.lang.Character.isJavaIdentifierStart(id.charAt(0)))) {
+            return false;
+        }
+
+        for (int i = 1; i < id.length(); i++) {
+            if (!(java.lang.Character.isJavaIdentifierPart(id.charAt(i)))) {
+                return false;
+            }
+        }
+
+        return Arrays.binarySearch(keywords, id) < 0;
+    }
+
+    private static final String[] keywords = new String[] {
+
+            //If adding to this, insert in alphabetical order!
+            "abstract", "assert", "boolean", "break", "byte", "case", //NOI18N
+            "catch", "char", "class", "const", "continue", "default", //NOI18N
+            "do", "double", "else", "enum", "extends", "false", "final", //NOI18N
+            "finally", "float", "for", "goto", "if", "implements", //NOI18N
+            "import", "instanceof", "int", "interface", "long", //NOI18N
+            "native", "new", "null", "package", "private", //NOI18N
+            "protected", "public", "return", "short", "static", //NOI18N
+            "strictfp", "super", "switch", "synchronized", "this", //NOI18N
+            "throw", "throws", "transient", "true", "try", "void", //NOI18N
+            "volatile", "while" //NOI18N
+    };
+
 }

@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Severity;
 import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -73,33 +73,33 @@ class EmailAddressValidator extends StringValidator {
         }
         String[] nameAndHost = address.split("@");
         if (nameAndHost.length == 0) {
-            problems.add (NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add (LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "NO_AT_SYMBOL", compName, address));
             return;
         }        
         if (nameAndHost.length == 1 && nameAndHost[0].contains("@")) {
-            problems.add(NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add(LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "EMAIL_MISSING_HOST", compName, nameAndHost[0]));
             return;
         }
         if (nameAndHost.length > 2) {
-            problems.add(NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add(LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "EMAIL_HAS_>1_@", compName, address));
             return;
         }
         String name = nameAndHost[0];
         if (name.length() == 0) {
-            problems.add(NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add(LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "EMAIL_MISSING_NAME", compName, name));
             return;
         }
         if (name.length() > 64) {
-            problems.add(NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add(LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "ADDRESS_MAY_BE_TOO_LONG", compName, name), Severity.WARNING);
         }
         String host = nameAndHost.length >= 2 ? nameAndHost[1] : null;
         if(host == null) {
-            problems.add(NbBundle.getMessage(EmailAddressValidator.class,
+            problems.add(LocalizationSupport.getMessage(EmailAddressValidator.class,
                     "EMAIL_MISSING_HOST", compName, nameAndHost[0]));
             return;
         }

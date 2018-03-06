@@ -43,7 +43,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -71,7 +71,7 @@ class UrlValidator extends StringValidator {
                         emailAddress);
             }
         } catch (MalformedURLException e) {
-            String problem = NbBundle.getMessage(UrlValidator.class,
+            String problem = LocalizationSupport.getMessage(UrlValidator.class,
                     "URL_NOT_VALID", model); //NOI18N
             problems.add(problem);
         }

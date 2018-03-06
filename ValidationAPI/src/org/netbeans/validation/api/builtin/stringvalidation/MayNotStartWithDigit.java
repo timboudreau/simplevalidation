@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -55,7 +54,7 @@ final class MayNotStartWithDigit extends StringValidator {
         if (model.length() > 0) {
             char c = model.charAt(0);
             if (Character.isDigit(c)) {
-                problems.add(NbBundle.getMessage(MayNotStartWithDigit.class,
+                problems.add(LocalizationSupport.getMessage(MayNotStartWithDigit.class,
                         "MAY_NOT_START_WITH_DIGIT", compName)); //NOI18N
             }
         }

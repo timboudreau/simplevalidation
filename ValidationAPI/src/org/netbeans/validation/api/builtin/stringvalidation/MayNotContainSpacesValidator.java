@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 /**
  *
  * @author Tim Boudreau
@@ -54,7 +53,7 @@ final class MayNotContainSpacesValidator extends StringValidator {
         char[] chars = model.toCharArray();
         for (char c : chars) {
             if (Character.isWhitespace(c)) {
-                problems.add(NbBundle.getMessage(
+                problems.add(LocalizationSupport.getMessage(
                         MayNotContainSpacesValidator.class,
                         "MAY_NOT_CONTAIN_WHITESPACE", compName)); //NOI18N
             }

@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -57,7 +56,7 @@ final class MinimumLength extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model.length() < len) {
-            problems.add(NbBundle.getMessage(MaximumLength.class,
+            problems.add(LocalizationSupport.getMessage(MaximumLength.class,
                     "STRING_TOO_SHORT", compName, model, "" + len)); //NOI18N
         }
     }

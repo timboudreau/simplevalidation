@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -57,10 +57,10 @@ final class CharsetValidator extends StringValidator {
         try {
             Charset.forName(model);
         } catch (IllegalCharsetNameException badName) {
-            problems.add (NbBundle.getMessage(CharsetValidator.class,
+            problems.add (LocalizationSupport.getMessage(CharsetValidator.class,
                     "ILLEGAL_CHARSET_NAME", compName, model)); //NOI18N
         } catch (UnsupportedCharsetException unsup) {
-            problems.add (NbBundle.getMessage(CharsetValidator.class,
+            problems.add (LocalizationSupport.getMessage(CharsetValidator.class,
                     "UNSUPPORTED_CHARSET_NAME", compName, model)); //NOI18N
         }
     }

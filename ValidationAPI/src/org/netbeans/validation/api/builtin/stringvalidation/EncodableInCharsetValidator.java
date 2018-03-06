@@ -43,8 +43,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -75,7 +74,7 @@ final class EncodableInCharsetValidator extends StringValidator {
                 String nue = new String(curr.getBytes(charsetName));
                 result = c[i] == nue.charAt(0);
                 if (!result) {
-                    problems.add(NbBundle.getMessage(
+                    problems.add(LocalizationSupport.getMessage(
                             EncodableInCharsetValidator.class,
                             "INVALID_CHARACTER", compName, curr, charsetName)); //NOI18N
                     break;

@@ -42,9 +42,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 
 import java.io.File;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
-import org.openide.util.Utilities;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -55,13 +53,16 @@ final class IllegalCharactersInFileNameValidator extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String text) {
         boolean invalid = text.contains(File.separator) || text.contains(File.pathSeparator);
-        if (!invalid && Utilities.isWindows()) {
+        if (!invalid && isWindows()) {
             invalid = text.contains(":");
         }
         if( invalid ) {
-            problems.add( NbBundle.getMessage (IllegalCharactersInFileNameValidator.class,
+            problems.add( LocalizationSupport.getMessage (IllegalCharactersInFileNameValidator.class,
                     "ERR_INVALID_FILE_NAME", compName, text)) ; //NOI18N
         }
     }
 
+    public static boolean isWindows() {
+        return System.getProperty("os.name").contains("Windows");
+    }
 }

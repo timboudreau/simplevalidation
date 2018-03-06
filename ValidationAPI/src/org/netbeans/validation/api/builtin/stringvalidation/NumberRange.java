@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -64,7 +63,7 @@ final class NumberRange extends StringValidator {
             double maxx = max.doubleValue();
             boolean result = val >= minn && val <= maxx;
             if (!result) {
-                problems.add (NbBundle.getMessage(NumberRange.class,
+                problems.add (LocalizationSupport.getMessage(NumberRange.class,
                         "VALUE_OUT_OF_RANGE", new Object[] { //NOI18N
                         compName, model, min, max})); 
             }

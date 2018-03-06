@@ -6,7 +6,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  * Does not allow a string to terminate with a particular character
@@ -22,7 +22,7 @@ final class MayNotEndWithValidator extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model != null && !model.isEmpty() && model.charAt(model.length() - 1) == c) {
-            problems.add(NbBundle.getMessage(MayNotEndWithValidator.class,
+            problems.add(LocalizationSupport.getMessage(MayNotEndWithValidator.class,
                     "MAY_NOT_END_WITH", compName, new String(new char[] { c })));
         }
     }

@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -55,7 +54,7 @@ final class IsAnIntegerValidator extends StringValidator {
         try {
             Integer.parseInt(model);
         } catch (NumberFormatException e) {
-            problems.add(NbBundle.getMessage (IsAnIntegerValidator.class, 
+            problems.add(LocalizationSupport.getMessage (IsAnIntegerValidator.class, 
                     "ERR_NOT_INTEGER", model)); //NOI18N
         }
     }

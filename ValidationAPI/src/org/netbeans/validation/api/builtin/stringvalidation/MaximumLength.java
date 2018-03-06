@@ -41,8 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -58,7 +57,7 @@ final class MaximumLength extends StringValidator {
     public void validate(Problems problems, String compName, String model) {
         boolean result = model.length() <= len;
         if (!result) {
-            problems.add(NbBundle.getMessage(MaximumLength.class,
+            problems.add(LocalizationSupport.getMessage(MaximumLength.class,
                     "STRING_TOO_LONG", compName, model, "" + len)); //NOI18N
         }
     }

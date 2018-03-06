@@ -41,7 +41,7 @@
 package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -65,7 +65,7 @@ final class DisallowCharactersValidator extends StringValidator {
         for (char c : chars) {
             for (char cc : model.toCharArray()) {
                 if (cc == c) {
-                    problems.add(NbBundle.getMessage(DisallowCharactersValidator.class,
+                    problems.add(LocalizationSupport.getMessage(DisallowCharactersValidator.class,
                             "DISALLOWED_CHARS", asString(), compName)); //NOI18N
                     return;
                 }

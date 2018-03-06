@@ -42,7 +42,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -64,7 +64,7 @@ public class BoundValidator implements Validator<String> {
             int val = (int) Double.parseDouble(model);
             boolean test = less ? val < value : val > value;
             if (!test) {
-                String problem = NbBundle.getMessage(
+                String problem = LocalizationSupport.getMessage(
                         BoundValidator.class,
                         less ? "ERR_TOO_LARGE" : "ERR_TOO_SMALL", compName, model); //NOI18N
                 problems.add(problem);

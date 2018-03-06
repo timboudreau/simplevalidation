@@ -9,6 +9,8 @@
 .idea/*
 target/*
 
+nb-configuration.xml
+
 /nbstubs/target/
 /BasicDemo/target/
 /ValidationDemo/target/

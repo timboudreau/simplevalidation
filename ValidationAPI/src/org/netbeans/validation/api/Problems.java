@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  * A collection of problems, to which a Validator can add additional problems.
@@ -183,7 +183,7 @@ public final class Problems implements Iterable<Problem> {
     public static Problems create(Class<?> localizerClass, String bundleKey) {
         assert bundleKey != null;
         assert localizerClass != null;
-        return create(NbBundle.getMessage(localizerClass, bundleKey));
+        return create(LocalizationSupport.getMessage(localizerClass, bundleKey));
     }
 
     /**
@@ -225,7 +225,7 @@ public final class Problems implements Iterable<Problem> {
                 sb.append (p);
             } else {
                 sb = new StringBuilder (
-                    NbBundle.getMessage(Problems.class, "CONCAT_PROBLEMS", sb, p));
+                    LocalizationSupport.getMessage(Problems.class, "CONCAT_PROBLEMS", sb, p));
             }
         }
         return sb.toString();

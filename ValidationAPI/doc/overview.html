@@ -62,7 +62,7 @@ and open the template in the editor.
     &#64;Override
     <span class="keyword-directive">public</span> <span class="keyword-directive">void</span> validate(Problems problems, String compName, String model) {
         <span class="keyword-directive">if</span> (model.isEmpty()) {
-            String message = NbBundle.getMessage(EmptyStringIllegalValidator.<span class="keyword-directive">class</span>,
+            String message = LocalizationSupport.getMessage(EmptyStringIllegalValidator.<span class="keyword-directive">class</span>,
                 <span class="character">&quot;</span><span class="character">MSG_MAY_NOT_BE_EMPTY</span><span class="character">&quot;</span>, compName); <span class="comment">//NOI18N</span>
             problems.add (message);
         }

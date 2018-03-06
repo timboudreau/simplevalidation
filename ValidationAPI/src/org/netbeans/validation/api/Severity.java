@@ -47,7 +47,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  * enum indicating {@code Severity}, used for classifying {@link Problem} instances.
@@ -165,7 +165,7 @@ public enum Severity {
      * @return
      */
     public String describeError (String toDescribe) {
-        return NbBundle.getMessage(Severity.class, name() + ".annotation",
+        return LocalizationSupport.getMessage(Severity.class, name() + ".annotation",
                 toDescribe);
     }
 
@@ -175,6 +175,6 @@ public enum Severity {
      */
     @Override
     public String toString() {
-        return NbBundle.getMessage(Severity.class, name());
+        return LocalizationSupport.getMessage(Severity.class, name());
     }
 }

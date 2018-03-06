@@ -43,8 +43,7 @@ package org.netbeans.validation.api.builtin.stringvalidation;
 import java.io.File;
 import org.netbeans.validation.api.Problems;
 import org.netbeans.validation.api.Severity;
-import org.netbeans.validation.api.Validator;
-import org.openide.util.NbBundle;
+import org.netbeans.validation.localization.LocalizationSupport;
 
 /**
  *
@@ -82,7 +81,7 @@ final class FileValidator extends StringValidator {
                 throw new AssertionError();
         }
         if (!ok) {
-            String problem = NbBundle.getMessage(FileValidator.class, key,
+            String problem = LocalizationSupport.getMessage(FileValidator.class, key,
                     file.getName());
             problems.add(problem, Severity.FATAL);
         }
