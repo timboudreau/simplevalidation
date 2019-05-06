@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.kenai</groupId>
         <artifactId>simplevalidation-parent</artifactId>
-        <version>1.12</version>
+        <version>1.13</version>
     </parent>
     <artifactId>simplevalidation-swing</artifactId>
     <packaging>jar</packaging>

@@ -111,11 +111,15 @@ final class HostNameValidator extends StringValidator {
             return;
         }
         String[] parts = model.split("\\.");
+        /*
+        // This test is from an ancient RFC that applied when this library
+        // was written but does not anymore
         if (parts.length > 4) {
             problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "TOO_MANY_LABELS", model)); //NOI18N
             return;
         }
+        */
         if (!allowPort && model.contains(":")) { //NOI18N
             problems.append(LocalizationSupport.getMessage(HostNameValidator.class,
                     "MSG_PORT_NOT_ALLOWED", compName, model)); //NOI18N

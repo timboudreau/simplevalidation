@@ -51,7 +51,6 @@ public class CustomLevelValidatorTest {
 
     @Test
     public void testValidate() {
-        System.out.println("testValidate");
         Validator<String> base = ValidatorUtils.merge(StringValidators.REQUIRE_NON_EMPTY_STRING,
                 StringValidators.REQUIRE_VALID_INTEGER,
                 StringValidators.REQUIRE_NON_NEGATIVE_NUMBER, new AlwaysWarnValidator(),
@@ -64,7 +63,6 @@ public class CustomLevelValidatorTest {
         assertTrue (pr.allProblems().size() > 0);
         Set<Severity> s = new HashSet<Severity>();
         for (Problem p : pr.allProblems()) {
-            System.out.println(p);
             s.add(p.severity());
             assertEquals (Severity.INFO, p.severity());
         }
@@ -77,7 +75,6 @@ public class CustomLevelValidatorTest {
         assertTrue (pr.allProblems().size() > 0);
         s.clear();
         for (Problem p : pr.allProblems()) {
-            System.out.println(p);
             assertNotSame (Severity.FATAL, p.severity());
             s.add(p.severity());
         }
