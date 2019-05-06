@@ -12,4 +12,12 @@ Originally intended for Swing applications, the GUI classes have been factored o
 The `nbstubs` project includes stub versions of localization-related classes from NetBeans and is needed
 when used outside of NetBeans - the `simplevalidation-standalone` project includes that in its JAR file.
 
+The [original project documentation can be viewed here](http://htmlpreview.github.io/?https://github.com/timboudreau/simplevalidation/blob/master/ValidationAPI/doc/overview.html)
+
+
+Maven Coordinates
+-----------------
+
+As of May 6, 2019, the groupId has been changed to `com.mastfrog` in order to be able to deploy the
+artifacts to Maven central.
 

@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.kenai</groupId>
+        <groupId>com.mastfrog</groupId>
         <artifactId>simplevalidation-parent</artifactId>
         <version>1.13</version>
     </parent>
@@ -25,15 +25,17 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.kenai</groupId>
-            <artifactId>simplevalidation</artifactId>
+            
+            
             <version>${project.version}</version>
-        </dependency>
+        <groupId>${project.groupId}</groupId>
+<artifactId>simplevalidation</artifactId></dependency>
         <dependency>
-            <groupId>com.kenai</groupId>
-            <artifactId>nbstubs</artifactId>
+            
+            
             <version>${project.version}</version>
-        </dependency>
+        <groupId>${project.groupId}</groupId>
+<artifactId>nbstubs</artifactId></dependency>
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-util-lookup</artifactId>
