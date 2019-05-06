@@ -7,7 +7,27 @@
         <version>1.13</version>
     </parent>
     <artifactId>simplevalidation-swing</artifactId>
-    <packaging>jar</packaging>
+    <scm>
+        <url>git@github.com:timboudreau/simplevalidation.git</url>
+        <connection>scm:git:https://github.com:timboudreau/simplevalidation.git</connection>
+        <developerConnection>git@github.com:timboudreau/simplevalidation.git</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/timboudreau/simplevalidation/issues</url>
+    </issueManagement>
+    <organization>
+        <name>Mastfrog Technologies</name>
+        <url>https://mastfrog.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
