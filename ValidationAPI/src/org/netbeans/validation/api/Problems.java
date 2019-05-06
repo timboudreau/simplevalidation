@@ -90,7 +90,6 @@ public final class Problems implements Iterable<Problem> {
     /**
      * Add a problem
      * @param problem The problem (may be null)
-     * @deprecated use append() instead
      * @return this
      * @since 1.6
      */

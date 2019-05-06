@@ -38,7 +38,7 @@ final class NumberRange extends StringValidator {
             double maxx = max.doubleValue();
             boolean result = val >= minn && val <= maxx;
             if (!result) {
-                problems.add (LocalizationSupport.getMessage(NumberRange.class,
+                problems.append (LocalizationSupport.getMessage(NumberRange.class,
                         "VALUE_OUT_OF_RANGE", new Object[] { //NOI18N
                         compName, model, min, max})); 
             }

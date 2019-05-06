@@ -47,7 +47,7 @@ final class CustomLevelValidator<T> extends AbstractValidator<T> {
             if (p.severity().compareTo(customSeverity) > 0) {
                 p = new Problem (p.getMessage(), customSeverity);
             }
-            problems.add(p);
+            problems.append(p);
         }
     }
 

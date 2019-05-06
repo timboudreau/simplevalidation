@@ -32,10 +32,10 @@ final class CharsetValidator extends StringValidator {
         try {
             Charset.forName(model);
         } catch (IllegalCharsetNameException badName) {
-            problems.add (LocalizationSupport.getMessage(CharsetValidator.class,
+            problems.append (LocalizationSupport.getMessage(CharsetValidator.class,
                     "ILLEGAL_CHARSET_NAME", compName, model)); //NOI18N
         } catch (UnsupportedCharsetException unsup) {
-            problems.add (LocalizationSupport.getMessage(CharsetValidator.class,
+            problems.append (LocalizationSupport.getMessage(CharsetValidator.class,
                     "UNSUPPORTED_CHARSET_NAME", compName, model)); //NOI18N
         }
     }

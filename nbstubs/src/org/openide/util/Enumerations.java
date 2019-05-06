@@ -119,6 +119,7 @@ final class Enumerations extends Object {
      * @param arr the array of object
      * @return enumeration of those objects
      */
+    @SafeVarargs
     public static <T> Enumeration<T> array(T... arr) {
         return Collections.enumeration(Arrays.asList(arr));
     }

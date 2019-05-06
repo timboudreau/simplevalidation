@@ -163,6 +163,7 @@ public class ColorChooserValidationListenerFactory extends SwingValidationListen
     }
 
     // XXX unchecked warnings: need cast method for ValidationListener
+    @SuppressWarnings("unchecked")
     static <CType, MType> ValidationListener<CType> findBuiltInValidationListener(final CType component, final ValidationStrategy strategy, ValidationUI validationUI, final Validator<MType> validator) {
         Class<MType> modelType = validator.modelType();
         if (component instanceof JList && Integer[].class.equals(modelType)) {

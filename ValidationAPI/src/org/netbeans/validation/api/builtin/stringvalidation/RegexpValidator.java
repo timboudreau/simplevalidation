@@ -19,7 +19,6 @@ import java.text.MessageFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.netbeans.validation.api.Problems;
-import org.netbeans.validation.api.Validator;
 
 /**
  *
@@ -42,7 +41,7 @@ final class RegexpValidator extends StringValidator {
         if (!result) {
             String prb = message;
             prb = MessageFormat.format(prb, new Object[] { compName, model });
-            problems.add(prb);
+            problems.append(prb);
         }
     }
 

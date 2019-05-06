@@ -46,12 +46,12 @@ final class ValidHostNameOrIPValidator extends StringValidator {
         boolean hasIntParts = false;
         boolean hasNonIntParts = false;
         if (model.indexOf(" ") > 0 || model.indexOf ("\t") > 0) {
-            problems.add (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
+            problems.append (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
                     "HOST_MAY_NOT_CONTAIN_WHITESPACE", compName, model)); //NOI18N
             return;
         }
         if (parts.length == 0) { //the string "."
-            problems.add (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
+            problems.append (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
                     "INVALID_HOST_OR_IP", compName, model)); //NOI18N
             return;
         }
@@ -60,12 +60,12 @@ final class ValidHostNameOrIPValidator extends StringValidator {
             if (i == parts.length - 1 && s.contains(":")) { //NOI18N
                 String[] partAndPort = s.split(":"); //NOI18N
                 if (partAndPort.length > 2) {
-                    problems.add (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
+                    problems.append (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
                             "TOO_MANY_COLONS", compName, model)); //NOI18N
                     return;
                 }
                 if (partAndPort.length == 0) { //the string ":"
-                    problems.add (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
+                    problems.append (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
                             "INVALID_HOST_OR_IP", compName, model)); //NOI18N
                     return;
                 }
@@ -74,7 +74,7 @@ final class ValidHostNameOrIPValidator extends StringValidator {
                     try {
                         Integer.parseInt (partAndPort[1]);
                     } catch (NumberFormatException nfe) {
-                        problems.add (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
+                        problems.append (LocalizationSupport.getMessage(ValidHostNameOrIPValidator.class,
                             "INVALID_PORT", compName, partAndPort[1])); //NOI18N
                         return;
                     }

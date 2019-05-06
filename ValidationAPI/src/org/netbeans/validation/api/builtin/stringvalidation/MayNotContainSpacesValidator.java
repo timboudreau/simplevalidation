@@ -28,7 +28,7 @@ final class MayNotContainSpacesValidator extends StringValidator {
         char[] chars = model.toCharArray();
         for (char c : chars) {
             if (Character.isWhitespace(c)) {
-                problems.add(LocalizationSupport.getMessage(
+                problems.append(LocalizationSupport.getMessage(
                         MayNotContainSpacesValidator.class,
                         "MAY_NOT_CONTAIN_WHITESPACE", compName)); //NOI18N
             }

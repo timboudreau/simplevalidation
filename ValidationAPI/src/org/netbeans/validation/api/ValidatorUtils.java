@@ -39,6 +39,7 @@ public class ValidatorUtils {
      * AND'd together, merged into a single validator
      * @return a single validator which delegates to all of the passed ones
      */
+    @SafeVarargs
     public static <T> Validator<T> merge (Validator<T>... validators) {
         if (validators == null) {
             throw new NullPointerException();
@@ -88,6 +89,7 @@ public class ValidatorUtils {
      * @param maximum
      * @param validators
      */
+    @SafeVarargs
     public static <T> Validator<T> limitSeverity (Severity maximum, Validator<T>... validators) {
         assert maximum != null : "Maximum null";
         assert validators != null : "Validators null";

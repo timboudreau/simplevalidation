@@ -129,6 +129,7 @@ public final class SwingValidationGroup extends ValidationGroup {
      * @param comp A text component such as a <code>JTextField</code>
      * @param validators One or more Validators
      */
+    @SafeVarargs
     public final void add(JTextComponent comp, Validator<String>... validators) {
         assert EventQueue.isDispatchThread() : "Must be called on event thread";
         assert validators.length > 0 : "Empty validator array";

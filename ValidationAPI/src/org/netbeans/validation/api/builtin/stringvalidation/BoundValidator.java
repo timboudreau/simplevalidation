@@ -42,7 +42,7 @@ public class BoundValidator implements Validator<String> {
                 String problem = LocalizationSupport.getMessage(
                         BoundValidator.class,
                         less ? "ERR_TOO_LARGE" : "ERR_TOO_SMALL", compName, model); //NOI18N
-                problems.add(problem);
+                problems.append(problem);
             }
         } catch (NumberFormatException e) {
             //do nothing - if someone wants not-a-number validation, they should

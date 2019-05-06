@@ -31,7 +31,7 @@ final class MinimumLength extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model.length() < len) {
-            problems.add(LocalizationSupport.getMessage(MaximumLength.class,
+            problems.append(LocalizationSupport.getMessage(MaximumLength.class,
                     "STRING_TOO_SHORT", compName, model, "" + len)); //NOI18N
         }
     }

@@ -68,6 +68,7 @@ public abstract class Converter<From,To> {
      * @param froms A chain of validator to convert.
      * @return A validator of the type requested
      */
+    @SafeVarargs
     public final Validator<To> convert (Validator<From>... froms) {
         return (convert(ValidatorUtils.merge(froms)));
     }

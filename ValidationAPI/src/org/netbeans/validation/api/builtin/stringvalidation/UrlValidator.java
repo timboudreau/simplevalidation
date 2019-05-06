@@ -48,7 +48,7 @@ class UrlValidator extends StringValidator {
         } catch (MalformedURLException e) {
             String problem = LocalizationSupport.getMessage(UrlValidator.class,
                     "URL_NOT_VALID", model); //NOI18N
-            problems.add(problem);
+            problems.append(problem);
         }
     }
 

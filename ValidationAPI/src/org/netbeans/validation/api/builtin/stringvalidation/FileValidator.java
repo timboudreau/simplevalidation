@@ -58,7 +58,7 @@ final class FileValidator extends StringValidator {
         if (!ok) {
             String problem = LocalizationSupport.getMessage(FileValidator.class, key,
                     file.getName());
-            problems.add(problem, Severity.FATAL);
+            problems.append(problem, Severity.FATAL);
         }
     }
     

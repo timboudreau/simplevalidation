@@ -40,7 +40,7 @@ final class DisallowCharactersValidator extends StringValidator {
         for (char c : chars) {
             for (char cc : model.toCharArray()) {
                 if (cc == c) {
-                    problems.add(LocalizationSupport.getMessage(DisallowCharactersValidator.class,
+                    problems.append(LocalizationSupport.getMessage(DisallowCharactersValidator.class,
                             "DISALLOWED_CHARS", asString(), compName)); //NOI18N
                     return;
                 }

@@ -31,7 +31,7 @@ final class NotJavaIdentifierValidator extends StringValidator {
             return;
         }
         if (!isJavaIdentifier(text)) {
-            problems.add(LocalizationSupport.getMessage(NotJavaIdentifierValidator.class,
+            problems.append(LocalizationSupport.getMessage(NotJavaIdentifierValidator.class,
                 "ERR_JAVA_IDENTIFIER", text));
         }
     }

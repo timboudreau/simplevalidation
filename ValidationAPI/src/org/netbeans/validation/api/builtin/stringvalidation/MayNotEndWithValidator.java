@@ -32,7 +32,7 @@ final class MayNotEndWithValidator extends StringValidator {
     @Override
     public void validate(Problems problems, String compName, String model) {
         if (model != null && !model.isEmpty() && model.charAt(model.length() - 1) == c) {
-            problems.add(LocalizationSupport.getMessage(MayNotEndWithValidator.class,
+            problems.append(LocalizationSupport.getMessage(MayNotEndWithValidator.class,
                     "MAY_NOT_END_WITH", compName, new String(new char[] { c })));
         }
     }

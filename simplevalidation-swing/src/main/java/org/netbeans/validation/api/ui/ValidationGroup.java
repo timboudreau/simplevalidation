@@ -192,6 +192,7 @@ public class ValidationGroup extends ValidationItem {
      * @param comp
      * @param validators
      */
+    @SafeVarargs
     public final <ComponentType, ValueType> void add (ComponentType comp, Validator<ValueType>... validators) {
         this.addItem (ValidationListenerFactory.createValidationListener(comp, ValidationStrategy.DEFAULT, decorationFor(comp), ValidatorUtils.merge(validators)), false);
     }
@@ -382,12 +383,12 @@ public class ValidationGroup extends ValidationItem {
                 if (vi != triggerThatHasAlreadyPerformedValidation) {
                     vi.subtreeRevalidation();
                 }
-                ps.add(vi.getCurrentLeadProblem());
+                ps.append(vi.getCurrentLeadProblem());
             }
         } else {
             for (ValidationItem vi : validationItems) {
                 final Problem p = vi.getCurrentLeadProblem();
-                ps.add(p);
+                ps.append(p);
                 if( p != null && p.isFatal() ){
                     break; // Optimization: We already found a fatal problem, no need to keep looking.
                 }

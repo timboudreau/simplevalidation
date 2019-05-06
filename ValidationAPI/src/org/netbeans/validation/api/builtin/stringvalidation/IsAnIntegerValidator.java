@@ -29,7 +29,7 @@ final class IsAnIntegerValidator extends StringValidator {
         try {
             Integer.parseInt(model);
         } catch (NumberFormatException e) {
-            problems.add(LocalizationSupport.getMessage (IsAnIntegerValidator.class, 
+            problems.append(LocalizationSupport.getMessage (IsAnIntegerValidator.class,
                     "ERR_NOT_INTEGER", model)); //NOI18N
         }
     }

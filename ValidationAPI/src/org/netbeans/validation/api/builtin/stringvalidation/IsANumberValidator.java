@@ -47,7 +47,7 @@ final class IsANumberValidator extends StringValidator {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException e) {
-                problems.add(LocalizationSupport.getMessage(IsANumberValidator.class, "NOT_A_NUMBER", model, compName)); //NOI18N
+                problems.append(LocalizationSupport.getMessage(IsANumberValidator.class, "NOT_A_NUMBER", model, compName)); //NOI18N
             }
         }
     }

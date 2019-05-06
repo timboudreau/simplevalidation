@@ -63,7 +63,7 @@ public class CustomLevelValidatorTest {
     private static final class AlwaysWarnValidator implements Validator<String> {
         @Override
         public void validate(Problems problems, String compName, String model) {
-            problems.add(new Problem("I am a warning", Severity.WARNING));
+            problems.append(new Problem("I am a warning", Severity.WARNING));
         }
 
         public Class<String> modelType() {
@@ -74,7 +74,7 @@ public class CustomLevelValidatorTest {
     private static final class AlwaysInfoValidator implements Validator<String> {
         @Override
         public void validate(Problems problems, String compName, String model) {
-            problems.add(new Problem("I am info", Severity.INFO));
+            problems.append(new Problem("I am info", Severity.INFO));
         }
 
         public Class<String> modelType() {

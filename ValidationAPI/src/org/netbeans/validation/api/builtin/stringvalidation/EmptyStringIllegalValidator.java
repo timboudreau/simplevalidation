@@ -27,7 +27,7 @@ final class EmptyStringIllegalValidator extends StringValidator {
         if (model.isEmpty()) {
             String message = LocalizationSupport.getMessage(EmptyStringIllegalValidator.class,
                 "MSG_MAY_NOT_BE_EMPTY", compName); //NOI18N
-            problems.add (message);
+            problems.append (message);
         }
     }
 }

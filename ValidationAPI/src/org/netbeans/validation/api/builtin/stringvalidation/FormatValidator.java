@@ -35,7 +35,7 @@ final class FormatValidator extends StringValidator {
         try {
             fmt.parseObject(model);
         } catch (ParseException ex) {
-            problems.add(LocalizationSupport.getMessage(FormatValidator.class,
+            problems.append(LocalizationSupport.getMessage(FormatValidator.class,
                     "MSG_DOES_NOT_MATCH_NUMBER_FORMAT", compName, model)); //NOI18N
         }
     }

@@ -29,7 +29,7 @@ final class MayNotStartWithDigit extends StringValidator {
         if (model.length() > 0) {
             char c = model.charAt(0);
             if (Character.isDigit(c)) {
-                problems.add(LocalizationSupport.getMessage(MayNotStartWithDigit.class,
+                problems.append(LocalizationSupport.getMessage(MayNotStartWithDigit.class,
                         "MAY_NOT_START_WITH_DIGIT", compName)); //NOI18N
             }
         }

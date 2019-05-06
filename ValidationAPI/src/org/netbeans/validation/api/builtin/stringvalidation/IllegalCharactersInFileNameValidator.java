@@ -32,7 +32,7 @@ final class IllegalCharactersInFileNameValidator extends StringValidator {
             invalid = text.contains(":");
         }
         if( invalid ) {
-            problems.add( LocalizationSupport.getMessage (IllegalCharactersInFileNameValidator.class,
+            problems.append( LocalizationSupport.getMessage (IllegalCharactersInFileNameValidator.class,
                     "ERR_INVALID_FILE_NAME", compName, text)) ; //NOI18N
         }
     }

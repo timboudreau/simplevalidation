@@ -178,7 +178,7 @@ final class HostNameValidator extends StringValidator {
         }
         Problems tmp = new Problems();
         StringValidators.encodableInCharset("UTF-8").validate(tmp, compName, label);
-        problems.putAll(tmp);
+        problems.addAll(tmp);
         if (!tmp.hasFatal()) {
             for (char c : label.toLowerCase().toCharArray()) {
                 if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9' || c == '-')) { //NOI18N

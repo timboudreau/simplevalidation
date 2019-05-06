@@ -49,7 +49,7 @@ final class EncodableInCharsetValidator extends StringValidator {
                 String nue = new String(curr.getBytes(charsetName));
                 result = c[i] == nue.charAt(0);
                 if (!result) {
-                    problems.add(LocalizationSupport.getMessage(
+                    problems.append(LocalizationSupport.getMessage(
                             EncodableInCharsetValidator.class,
                             "INVALID_CHARACTER", compName, curr, charsetName)); //NOI18N
                     break;

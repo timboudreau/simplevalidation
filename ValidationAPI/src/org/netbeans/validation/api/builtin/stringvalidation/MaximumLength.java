@@ -32,7 +32,7 @@ final class MaximumLength extends StringValidator {
     public void validate(Problems problems, String compName, String model) {
         boolean result = model.length() <= len;
         if (!result) {
-            problems.add(LocalizationSupport.getMessage(MaximumLength.class,
+            problems.append(LocalizationSupport.getMessage(MaximumLength.class,
                     "STRING_TOO_LONG", compName, model, "" + len)); //NOI18N
         }
     }

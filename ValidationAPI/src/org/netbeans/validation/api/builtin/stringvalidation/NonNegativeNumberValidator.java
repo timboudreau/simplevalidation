@@ -32,7 +32,7 @@ class NonNegativeNumberValidator extends StringValidator {
                 String problem = LocalizationSupport.getMessage(
                         NonNegativeNumberValidator.class,
                         "ERR_NEGATIVE_NUMBER", compName); //NOI18N
-                problems.add (problem);
+                problems.append (problem);
             }
         } catch (NumberFormatException e) {
             //do nothing - if someone wants not-a-number validation, they should

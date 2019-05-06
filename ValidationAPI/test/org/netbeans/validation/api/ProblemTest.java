@@ -43,7 +43,7 @@ public class ProblemTest {
         assertSame( c, Problem.worst(a, c) );
         assertSame( c, Problem.worst(c, b) );
 
-        List l = new ArrayList(Arrays.asList(a, b, c, p0));
+        List<Problem> l = new ArrayList<>(Arrays.asList(a, b, c, p0));
         assertSame (a, l.get(0));
         assertSame (c, l.get(2));
         assertSame (p0, l.get(3));
@@ -58,30 +58,28 @@ public class ProblemTest {
 
         Problems problems = new Problems();
 
-        problems.add (a);
+        problems.append (a);
         assertFalse(problems.hasFatal());
-        problems.add (b);
+        problems.append (b);
         assertFalse(problems.hasFatal());
-        problems.add (c);
+        problems.append (c);
         assertTrue(problems.hasFatal());
-        problems.add(p0);
+        problems.append(p0);
         assertTrue(problems.hasFatal());
         assertSame (c, problems.getLeadProblem());
         assertTrue(problems.hasFatal());
 
         Problems clean = new Problems();
         assertFalse(clean.hasFatal());
-        clean.putAll(problems);
+        clean.addAll(problems);
         assertTrue(clean.hasFatal());
         Problems alsoClean = new Problems();
         assertFalse(alsoClean.hasFatal());
-        alsoClean.add("info", Severity.INFO);
+        alsoClean.append("info", Severity.INFO);
         assertFalse(alsoClean.hasFatal());
-        alsoClean.add("warning", Severity.WARNING);
+        alsoClean.append("warning", Severity.WARNING);
         assertFalse(alsoClean.hasFatal());
-        alsoClean.add("fatal");
+        alsoClean.append("fatal");
         assertTrue(alsoClean.hasFatal());
     }
-
-
 }

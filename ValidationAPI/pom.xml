@@ -1,12 +1,13 @@
-<?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>simplevalidation-parent</artifactId>
         <groupId>com.mastfrog</groupId>
         <version>1.13</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mastfrog</groupId><artifactId>simplevalidation</artifactId>
+    <artifactId>simplevalidation</artifactId>
     <scm>
         <url>git@github.com:timboudreau/simplevalidation.git</url>
         <connection>scm:git:https://github.com:timboudreau/simplevalidation.git</connection>
@@ -68,7 +69,7 @@
                                     </includes>
                                     <excludes>
                                         <exclude>**/*.java</exclude>
-                                    </excludes>                                    
+                                    </excludes>
                                 </resource>
                             </resources>
                         </configuration>
@@ -83,12 +84,7 @@
                     <overview>${basedir}/doc/overview.html</overview>
                 </configuration>
             </plugin>
-        </plugins>        
+        </plugins>
     </build>
-    <dependencies>
-    </dependencies>
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+    <dependencies/>
 </project>

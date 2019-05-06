@@ -260,8 +260,24 @@ public enum StringValidators implements Validator<String> {
      *
      * @param validators a chain of String validators
      */
+    @SafeVarargs
     public static Validator<String> trimString(Validator<String>... validators) {
+        assert sameType(validators);
         return new TrimStringValidator( ValidatorUtils.merge(validators) );
+    }
+
+    private static boolean sameType(Validator<?>[] v) {
+        Class<?> type = null;
+        for (int i = 0; i < v.length; i++) {
+            if (type == null) {
+                type = v[i].modelType();
+            } else {
+                if (type != v[i].modelType()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -286,7 +302,9 @@ public enum StringValidators implements Validator<String> {
      * @return A validator which evaluates each of component of the split string
      * using the passed Validator (or chain of validators)
      */
+    @SafeVarargs
     public static Validator<String> splitString(String regexp, Validator<String>... validators) {
+        assert sameType(validators);
         return new SplitStringValidator(regexp, ValidatorUtils.merge(validators) );
     }
 

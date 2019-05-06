@@ -32,7 +32,7 @@ final class SelectionMustBeNonEmptyValidator extends AbstractValidator<Integer[]
     public void validate(Problems problems, String compName, Integer[] selectedItems) {
         if (selectedItems.length == 0) {
             String str = "Something must be selected";
-            problems.add(str, Severity.FATAL);
+            problems.append(str, Severity.FATAL);
         }
     }
 
